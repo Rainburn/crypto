@@ -14,10 +14,14 @@ def affine_encrypt(plain, m, b):
     cipher = ""
 
     for i in range(plain_length):
-        p = convert_char_to_base26(plain[i])
-        c_in_base26 = ((m * p) + b) % 26
-        c = convert_base26_to_char(c_in_base26)
-        cipher = cipher + c
+        if (is_alphabet(plain[i])):
+            p = convert_char_to_base26(plain[i])
+            c_in_base26 = ((m * p) + b) % 26
+            c = convert_base26_to_char(c_in_base26)
+            cipher = cipher + c
+        
+        else:
+            cipher = cipher + plain[i]
 
 
 
@@ -33,9 +37,13 @@ def affine_decrypt(cipher, m, b):
     plain = ""
 
     for i in range(cipher_length):
-        c = convert_char_to_base26(cipher[i])
-        p_in_base26 = ((c - b) * m_inv) % 26
-        p = convert_base26_to_char(p_in_base26)
-        plain = plain + p
-    
+        if (is_alphabet(cipher[i])):
+            c = convert_char_to_base26(cipher[i])
+            p_in_base26 = ((c - b) * m_inv) % 26
+            p = convert_base26_to_char(p_in_base26)
+            plain = plain + p
+
+        else:
+            plain = plain + cipher[i]
+
     return plain

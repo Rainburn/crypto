@@ -2,10 +2,12 @@ from vigenere import *
 from affine import *
 from playfair import *
 
-plain = "kripto"
 
-cipher = affine_encrypt(plain, 7, 10)
-plain_res = affine_decrypt(cipher, 7, 10)
+key = "JALAN GANESHA SEPULUH"
+plain_playfair = "temui ibu nanti malam"
 
+cipher = playfair_encrypt(plain_playfair, key)
+plain_res = playfair_decrypt(cipher, key)
 
-playfair_encrypt()
+print(cipher)
+print(plain_res)

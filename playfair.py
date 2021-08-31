@@ -1,3 +1,5 @@
+from utils import *
+
 # Playfair Cipher
 
 # Key is a 5x5 Matrix
@@ -18,11 +20,19 @@ def read_key():
     return key_matrix
 
 
+def get_missing_char(key_matrix):
+    all_alphabet = [chr(i) for i in range(97,123)]
+
+    for i in range(5):
+        for j in range(5):
+            all_alphabet.remove(key_matrix[i][j])
+
+    return all_alphabet[0]
 
 def is_missing_char(ch, key_matrix):
     return False
 
-def one_col_check(ch1, ch2, key_matrix):
+def one_col_check(ch1, ch2, key_matrix, encrypt_mode):
 
     ch1 = ch1.lower()
     ch2 = ch2.lower()
@@ -40,8 +50,6 @@ def one_col_check(ch1, ch2, key_matrix):
             if (ch1 == key_matrix[i][j]):
                 ch1_col = i
                 ch1_row = j
-                
-                print("Found ch col at : ", ch1_col)
 
                 break
 
@@ -61,8 +69,8 @@ def one_col_check(ch1, ch2, key_matrix):
 
     # Get Next char
 
-    ch1_next_row = (ch1_row + 1) % 5
-    ch2_next_row = (ch2_row + 1) % 5
+    ch1_next_row = (ch1_row + 1) % 5 if (encrypt_mode) else (ch1_row - 1) % 5
+    ch2_next_row = (ch2_row + 1) % 5 if (encrypt_mode) else (ch2_row - 1) % 5
 
     ch1_next_char = key_matrix[ch1_col][ch1_next_row]
     ch2_next_char = key_matrix[ch1_col][ch2_next_row]
@@ -70,7 +78,7 @@ def one_col_check(ch1, ch2, key_matrix):
     return (ch1_next_char, ch2_next_char)
 
 
-def one_row_check(ch1, ch2, key_matrix):
+def one_row_check(ch1, ch2, key_matrix, encrypt_mode):
 
     ch1 = ch1.lower()
     ch2 = ch2.lower()
@@ -108,8 +116,8 @@ def one_row_check(ch1, ch2, key_matrix):
 
     # Get Next char
 
-    ch1_next_col = (ch1_col + 1) % 5
-    ch2_next_col = (ch2_col + 1) % 5
+    ch1_next_col = (ch1_col + 1) % 5 if (encrypt_mode) else (ch1_col - 1) % 5
+    ch2_next_col = (ch2_col + 1) % 5 if (encrypt_mode) else (ch2_col - 1) % 5
 
     ch1_next_char = key_matrix[ch1_next_col][ch1_row]
     ch2_next_char = key_matrix[ch2_next_col][ch1_row]
@@ -140,17 +148,163 @@ def get_squared_chars(ch1, ch2, key_matrix):
                 ch2_row = j
             
     
+
     ch1_next = key_matrix[ch2_col][ch1_row]
     ch2_next = key_matrix[ch1_col][ch2_row]
 
+
     return (ch1_next, ch2_next)
 
+def generate_key_matrix(key):
 
-def playfair_encrypt():
+    # Remove all whitespaces
+    key = key.lower()
+    key = key.replace(" ", "")
+    key_length = len(key)
 
-    key = read_key()
+    # Set unused char to 'j'
+    missing_char = "j"
 
-    x = get_squared_chars("h", "r", key)
-    print(x)
+    all_alphabet = [chr(i) for i in range(97, 123)]
+    all_alphabet.remove(missing_char)
 
-    return
+    used_alphabet = []
+
+    for i in range(key_length): 
+
+        if (key[i] == missing_char):
+            continue
+        if (key[i] in used_alphabet):
+            continue
+        used_alphabet.append(key[i])
+        all_alphabet.remove(key[i])
+
+    used_alphabet = used_alphabet + all_alphabet
+
+    # Convert to Matrix
+    key_matrix = [[used_alphabet[j+i*5] for i in range(5)] for j in range(5)]
+
+    return key_matrix
+
+
+def plain_preps(plain):
+
+    missing_char = 'j'
+    misisng_char_replacement = 'i'
+    subs_char = 'x'
+
+    plain = plain.replace(missing_char, misisng_char_replacement)
+
+    alphabet_only_plain = ""
+
+    for i in range(len(plain)):
+        if (is_alphabet(plain[i])):
+            alphabet_only_plain = alphabet_only_plain + plain[i]
+
+    
+    plain = list(alphabet_only_plain)
+
+
+    # Check pair with identical member
+    plain_length = len(plain)
+    current_idx = 0
+
+    while (current_idx < plain_length):
+
+        if (current_idx + 1 < plain_length):
+
+            # Check whether the pair members are identical
+            if (plain[current_idx] == plain[current_idx+1]):
+                plain.insert(current_idx+1, subs_char)
+                plain_length = plain_length + 1
+
+                current_idx = current_idx + 2
+
+            else :
+                current_idx = current_idx + 2
+
+
+
+        elif (current_idx + 1 >= plain_length):
+            plain.append(subs_char)
+            plain_length = plain_length + 1
+            
+            current_idx = current_idx + 2
+
+
+
+    plain = ''.join(plain)
+
+    plain_pairs = [plain[i:i+2] for i in range(0, len(plain), 2)]
+
+    return plain_pairs
+
+
+def playfair_encrypt(plain, key):
+
+    # Key is a 5x5 Matrix
+    key_matrix = generate_key_matrix(key)
+
+    plain_pairs = plain_preps(plain)
+
+    total_plain_pairs = len(plain_pairs)
+
+    cipher = []
+
+
+    for i in range(total_plain_pairs):
+        ch1 = plain_pairs[i][0] 
+        ch2 = plain_pairs[i][1]
+
+        col_check_res = one_col_check(ch1, ch2, key_matrix, True)
+        row_check_res = one_row_check(ch1, ch2, key_matrix, True)
+
+        if (col_check_res != (-1,-1)):
+            cipher.append(col_check_res[0] + col_check_res[1])
+        
+        elif (row_check_res != (-1,-1)):
+            cipher.append(row_check_res[0] + row_check_res[1])
+        
+        else :
+            square_res = get_squared_chars(ch1, ch2, key_matrix)
+            cipher.append(square_res[0] + square_res[1])
+
+
+    cipher_as_string = ''.join(cipher)
+
+    return cipher_as_string
+
+def playfair_decrypt(cipher, key):
+
+    key_matrix = generate_key_matrix(key)
+
+    cipher_length = len(cipher)
+
+    cipher_pairs = [cipher[i:i+2] for i in range(0, cipher_length, 2)]
+
+    plain = []
+
+    print(cipher_pairs)
+
+    for i in range(len(cipher_pairs)):
+        ch1 = cipher_pairs[i][0]
+        ch2 = cipher_pairs[i][1]
+
+        col_check_res = one_col_check(ch1, ch2, key_matrix, False)
+        row_check_res = one_row_check(ch1, ch2, key_matrix, False)
+
+        if (col_check_res != (-1,-1)):
+            plain.append(col_check_res[0] + col_check_res[1])
+
+        elif (row_check_res != (-1,-1)):
+            plain.append(row_check_res[0] + row_check_res[1])
+
+        else :
+            square_res = get_squared_chars(ch1, ch2, key_matrix)
+            plain.append(square_res[0] + square_res[1])
+
+    plain_as_string = ''.join(plain)
+
+    plain_result = plain_as_string.replace("x", "")
+
+    return plain_result
