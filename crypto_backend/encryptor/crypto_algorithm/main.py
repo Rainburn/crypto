@@ -1,6 +1,6 @@
-from vigenere import *
-from affine import *
-from playfair import *
+from .vigenere import *
+from .affine import *
+from .playfair import *
 
 
 key = "JALAN GANESHA SEPULUH"

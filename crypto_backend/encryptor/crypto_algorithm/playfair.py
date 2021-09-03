@@ -1,4 +1,4 @@
-from utils import *
+from .utils import *
 
 # Playfair Cipher
 
@@ -176,6 +176,10 @@ def generate_key_matrix(key):
             continue
         if (key[i] in used_alphabet):
             continue
+
+        if (not is_alphabet(key[i])):
+            continue
+
         used_alphabet.append(key[i])
         all_alphabet.remove(key[i])
 
@@ -272,7 +276,7 @@ def playfair_encrypt(plain, key):
 
     cipher_as_string = ''.join(cipher)
 
-    return cipher_as_string
+    return cipher_as_string.upper()
 
 def playfair_decrypt(cipher, key):
 
