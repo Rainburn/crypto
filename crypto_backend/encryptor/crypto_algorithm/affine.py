@@ -1,4 +1,4 @@
-from utils import *
+from .utils import *
 
 # Affine Cipher
 
@@ -25,7 +25,7 @@ def affine_encrypt(plain, m, b):
 
 
 
-    return cipher
+    return cipher.upper()
 
 
 def affine_decrypt(cipher, m, b):

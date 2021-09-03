@@ -2,7 +2,7 @@
 # A = 65; a = 97
 # Z = 90; z = 122
 
-from utils import *
+from .utils import *
 
 # Vigenere Cipher Basic
 
@@ -47,7 +47,7 @@ def vigenere_encrypt(plain, key):
             c = convert_base26_to_char(c_in_ascii)
             cipher = cipher + c
 
-        return cipher
+        return cipher.upper()
         
 
 
