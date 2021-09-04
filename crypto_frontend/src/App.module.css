@@ -1,0 +1,25 @@
+.appBar {
+  background-image: linear-gradient(60deg,rgb(48,58,122), rgb(49,13,58));
+}
+
+.button {
+  border: 0;
+  border-radius: 20px;
+  background-image: linear-gradient(60deg, rgb(90,183,192), rgb(48,58,122));
+  
+  color: white;
+  height: 30;
+  width: 150px;
+  padding: 5px 20px;
+  margin-top: 1em;
+  text-transform: capitalize;
+  border-collapse: separate; 
+}
+
+
+.button:hover,
+.button:focus {
+  box-shadow: 0 3px 1px 1px rgba(49, 13, 58, .2) var(--hover);
+  /* box-shadow: 0 0.5em 0.5em -0.4em ; */
+  transform: translateY(-0.05em);
+}
