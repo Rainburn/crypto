@@ -156,10 +156,10 @@ def auto_key_encrypt(plain,key):
     key_length = len(key)
 
     cipher = ""
+    key_loop = key
     
     #If key is shorter than plain text, concatenate with plaintext
     if(key_length<plain_length):
-        key_loop = key
         for i in range(plain_length-key_length):
             key_loop = key_loop + plain[i]
 
@@ -173,3 +173,31 @@ def auto_key_encrypt(plain,key):
 
     return cipher
     
+def auto_key_decrypt(cipher,key):
+    cipher = cipher.lower()
+
+    cipher_length = len(cipher)
+    key_length = len(key)
+
+    plain = ""
+    key_loop = key
+    
+     #If key is shorter than plain text, concatenate with decrypted key
+    if(key_length<cipher_length):
+        for i in range(cipher_length-key_length):
+            c = convert_char_to_base26(cipher[i])
+            k = convert_char_to_base26(key_loop[i])
+            p_in_ascii = (c - k) % 26
+            key_loop = key_loop + convert_base26_to_char(p_in_ascii)
+    
+    #Decryption
+    for i in range(cipher_length):
+        c = convert_char_to_base26(cipher[i])
+        k = convert_char_to_base26(key_loop[i])
+        p_in_ascii = (c - k) % 26
+        p = convert_base26_to_char(p_in_ascii)
+        plain = plain + p
+
+    return plain
+
+
