@@ -3,6 +3,7 @@
 # Z = 90; z = 122
 
 import sys
+import random
 
 # Convert a Char in Base 26, A = 0, Z = 25
 def convert_char_to_base26(character):
@@ -55,3 +56,13 @@ def print_squared_matrix(matrix):
                 print(matrix[j][i])
             else :
                 print(matrix[j][i], end=' ')
+
+def create_full_vigenere_table():
+    alphabet = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"]
+    alphabet_length = len(alphabet)
+    table = [[0 for x in range(alphabet_length)] for y in range(alphabet_length)] 
+    for i in range(alphabet_length):
+        random_alphabet = alphabet[:]
+        random.shuffle(random_alphabet)
+        table[i] = random_alphabet
+    return table
