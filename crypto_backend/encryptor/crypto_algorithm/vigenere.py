@@ -1,7 +1,7 @@
 # ASCII guide
 # A = 65; a = 97
 # Z = 90; z = 122
-import utils
+from .utils import *
 # Vigenere Cipher Basic
 
 def vigenere_encrypt(plain, key):

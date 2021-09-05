@@ -16,6 +16,7 @@ import {
 } from '@material-ui/core';
 import CssBaseline from "@material-ui/core/CssBaseline";
 import GetAppIcon from '@material-ui/icons/GetApp';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 import styles from './App.module.css';
 
 function App() {
@@ -26,6 +27,14 @@ function App() {
   const [keyText, setKeyText] = useState('')
   const [resultText, setResultText] = useState('haloyhaloyhaloyhaloy');
   
+  const copyToClipboard = (text) => {
+    const el = document.createElement('textarea');
+    el.value = text;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+  }
   
   const readTxtFile = async (e) => {
     e.preventDefault()
@@ -36,6 +45,7 @@ function App() {
     };
     reader.readAsText(e.target.files[0])
   }
+  
   const downloadTxtFile = () => {
     const element = document.createElement("a");
     const file = new Blob([resultText], {type: 'text/plain'});
@@ -114,15 +124,23 @@ function App() {
       </AppBar>
       <Container maxWidth="md">
         <form noValidate autoComplete="off" onSubmit={handleSubmit}>
-          
-          <TextField 
-            required 
-            multiline
-            id="text" 
-            label="Plain/Cipher Text"
-            fullWidth 
-            disabled={requestText!==''}
-          />
+          <Box display="flex" flexDirection="row" >
+              <Box p={1} flexGrow={1}>
+                <TextField 
+                  required 
+                  multiline
+                  id="text" 
+                  label="Plain/Cipher Text"
+                  fullWidth 
+                  disabled={requestText!==''}
+                />
+              </Box>
+              <Box p={1}>
+                <IconButton aria-label="download" onClick={() => copyToClipboard(requestText)}>
+                  <FileCopyIcon />
+                </IconButton>
+              </Box>
+          </Box>
           <input type="file" onChange={(e) => readTxtFile(e)} />
           <TextField required id="key" label="Key" fullWidth multiline />
           <FormControlLabel
@@ -135,6 +153,8 @@ function App() {
             label="5 chunks"
           />
           
+          
+          
           <Box display="flex" flexDirection="row" >
               <Box p={1} flexGrow={1}>
                 <Typography id="result" variant="h5" gutterBottom gutterTop>
@@ -142,12 +162,14 @@ function App() {
                 </Typography>
               </Box>
               <Box p={1}>
-              <IconButton aria-label="download" onClick={downloadTxtFile}>
-                <GetAppIcon />
-              </IconButton>
+                <IconButton aria-label="download" onClick={downloadTxtFile}>
+                  <GetAppIcon />
+                </IconButton>
+                <IconButton aria-label="download" onClick={() => copyToClipboard(resultText)}>
+                  <FileCopyIcon />
+                </IconButton>
               </Box>
-              
-            </Box>
+          </Box>
            
             <Box display="flex" flexDirection="row" p={2} m={4} bgcolor="background.paper">
               <Box p={1} flexGrow={1}>
