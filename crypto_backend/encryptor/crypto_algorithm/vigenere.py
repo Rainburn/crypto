@@ -200,3 +200,55 @@ def auto_key_decrypt(cipher,key):
 
     return plain
 
+def extended_vigenere_encrypt(plain,key):
+
+    plain_length = len(plain)
+    key_length = len(key)
+
+    cipher = ""
+    key_loop = key
+
+    # Key is shorter than plain
+    if (key_length < plain_length):
+        
+        for i in range(plain_length-key_length):
+            loop_idx = i % key_length
+            key_loop = key_loop + key[loop_idx]
+
+    print(key_loop)
+    # Encrypting
+    for i in range(plain_length):
+        p = convert_char_to_base256(plain[i])
+        k = convert_char_to_base256(key_loop[i])
+        c_in_ascii = (p + k) % 256
+        c = convert_base256_to_char(c_in_ascii)
+        cipher = cipher + c
+
+    return cipher
+
+def extended_vigenere_decrypt(cipher, key):
+
+    cipher_length = len(cipher)
+    key_length = len(key)
+
+    plain = ""
+    key_loop = key
+
+    # Key is shorter than plain
+    if (key_length < cipher_length):
+
+        for i in range(cipher_length-key_length):
+            loop_idx = i % key_length
+            key_loop = key_loop + key[loop_idx]
+
+
+    # Decrypting
+    for i in range(cipher_length):
+        c = convert_char_to_base256(cipher[i])
+        k = convert_char_to_base256(key_loop[i])
+        p_in_ascii = (c - k) % 256
+        p = convert_base256_to_char(p_in_ascii)
+        
+        plain = plain + p
+
+    return plain

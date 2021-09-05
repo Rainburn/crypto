@@ -22,6 +22,14 @@ def convert_base26_to_char(base26):
     ascii_num = base26 + 97
     return chr(ascii_num)
 
+# Convert a Char in Base 256
+def convert_char_to_base256(character):
+    return ord(character)
+    
+# Convert a Base 256 to ASCII
+def convert_base256_to_char(base256):
+    return chr(base256)
+
 # Get Inverse of Modulo
 def get_inverse_of_m(m, divider):
     
