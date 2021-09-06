@@ -171,31 +171,16 @@ function App() {
       };
     }
     
-    console.log(data);
     axios.post(`http://127.0.0.1:5000/result`, data)
       .then(res => {
-        console.log(res);
-        console.log(res.data);
         const result = crypt.toLowerCase() === 'encrypt' ? res.data.cipher: res.data.plain;
         setResultText(result.toUpperCase())
         
         if(res.data.table!=undefined){
-          console.log("DOWNLOADDD")
           downloadCsv(res.data.table);
         }
       })
   }
-  
-  useEffect(()=> {
-    console.log("-------------------");
-    console.log(crypt.toLowerCase());
-    console.log(method);
-    console.log(requestText);
-    console.log(keyText);
-    console.log(document.getElementById("plain/ciphertext").value);
-    console.log(document.getElementById("key").value);
-    setRequestText()
-  }, [crypt,method,requestText,keyText]);
   
   useEffect(()=>{
     if(crypt.toLowerCase()==='decrypt' && method==='2'){
