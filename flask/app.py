@@ -76,6 +76,7 @@ def result():
                 
             elif (algo_id == "2"): # Full Vigenere
                 key = form['key']
+                table = form['table']
                 result = full_vigenere_decrypt(cipher, key, table)
                 return {'plain' : result, 'key' : key, 'cipher' : cipher}
                 

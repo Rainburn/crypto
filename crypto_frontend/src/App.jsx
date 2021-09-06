@@ -33,6 +33,8 @@ function App() {
   const [resultText, setResultText] = useState('');
   const [mkeyText,setMKeyText] = useState('');
   const [isShowMKey, setIsShowMKey] = useState(false);
+  const [table,setTable] = useState();
+  const [isShowDecrypt, setIsShowDecrypt] = useState(false);
   
   const copyToClipboard = (text) => {
     const el = document.createElement('textarea');
@@ -43,6 +45,40 @@ function App() {
     document.body.removeChild(el);
   }
   
+  const downloadCsv = (rows) => {
+    let csvContent = "data:text/csv;charset=utf-8," 
+    + rows.map(e => e.join(",")).join("\n");
+    
+    var encodedUri = encodeURI(csvContent);
+    var link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "my_data.csv");
+    document.body.appendChild(link); // Required for FF
+
+    link.click();
+  }
+  
+  const readCsvFile = (e) => {
+    e.preventDefault()
+    let csvStr;
+    const reader = new FileReader()
+    reader.onload = async (e) => { 
+      const text = (e.target.result)
+      csvStr = text;
+      
+      const array = []
+      csvStr.split("\n").forEach((value)=>{
+        const arr = value.split(",");
+        array.push(arr)
+      })
+      
+      setTable(array);
+    };
+    reader.readAsText(e.target.files[0])
+    
+    
+  }
+  
   const readTxtFile = async (e) => {
     e.preventDefault()
     const reader = new FileReader()
@@ -51,8 +87,7 @@ function App() {
       var s = document.getElementById("plain/ciphertext");
       s.value = text;
       setRequestText(text);
-      console.log("text");
-      console.log(text);
+
     };
     reader.readAsText(e.target.files[0])
   }
@@ -112,6 +147,18 @@ function App() {
       }
     };
     
+    if(isShowDecrypt){
+      data = {
+        "data": {
+          "action" : crypt.toLowerCase(),
+          "algorithm": method,
+          "text": text,
+          "key": document.getElementById("key").value,
+          "table": table,
+        }
+      };
+    }
+    
     if(isShowMKey){
       data = {
         "data": {
@@ -131,6 +178,11 @@ function App() {
         console.log(res.data);
         const result = crypt.toLowerCase() === 'encrypt' ? res.data.cipher: res.data.plain;
         setResultText(result.toUpperCase())
+        
+        if(res.data.table!=undefined){
+          console.log("DOWNLOADDD")
+          downloadCsv(res.data.table);
+        }
       })
   }
   
@@ -144,6 +196,15 @@ function App() {
     console.log(document.getElementById("key").value);
     setRequestText()
   }, [crypt,method,requestText,keyText]);
+  
+  useEffect(()=>{
+    if(crypt.toLowerCase()==='decrypt' && method==='2'){
+      setIsShowDecrypt(true);
+    }
+    else{
+      setIsShowDecrypt(false);
+    }
+  }, [crypt,method])
   
   const onSwitchChange = (event) => {
     setis5(!is5);
@@ -202,7 +263,9 @@ function App() {
             <input class={styles.button} type="file" onChange={(e) => readTxtFile(e)} />
             Upload File
             </label>
-  
+            
+              
+            
             {isShowMKey && (
               <div>
               <FormControl className={styles.full}>
@@ -242,7 +305,13 @@ function App() {
               // onChange={(e)=> setKeyText(e.target.value)}
             />
             
-            
+            {isShowDecrypt && (
+            <label class={styles.upload}>
+            <input class={styles.button} type="file" onChange={(e) => readCsvFile(e)} />
+              Upload Csv File
+            </label>
+            )}
+  
             
             {resultText !=='' && (
             <Box display="flex" flexDirection="row" >
