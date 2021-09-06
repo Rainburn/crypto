@@ -233,8 +233,6 @@ function App() {
                     multiline
                     fullWidth 
                     focused
-                    // value={requestText}
-                    // onChange={(e)=> setRequestText(e.target.value)}
                   />
                 </Box>
                 <Box p={1}>
@@ -286,8 +284,6 @@ function App() {
               fullWidth 
               multiline 
               focused
-              // value={keyText}
-              // onChange={(e)=> setKeyText(e.target.value)}
             />
             
             {isShowDecrypt && (
