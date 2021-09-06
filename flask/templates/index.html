@@ -1,0 +1,28 @@
+<html>
+  <head>
+    <title>Home</title>
+  </head>
+  <body>
+
+      <form action="/result" method="POST">
+        <p>Plain <textarea name="plain"></textarea></p>
+        <p>Key <textarea name="key"></textarea></p>
+        <p>
+        <input type="radio" id="encrypt" value="encrypt" name="action"> 
+        <label for="encrypt">Encrypt</label>
+        <input type="radio" id="decrypt" value="decrypt" name="action">
+        <label for="decrypt">Decrypt</label>
+        </p>
+        <p>
+        <label for="algorithms">Algorithm :</label>
+        <select id="algorithms" name="algorithm">
+          <option value="1">Vigenere</option>
+          <option value="2">Playfair</option>
+          <option value="3">Affine</option>
+        </select>
+        </p>
+        <p><input type="submit" value="Submit"></p>
+      </form>
+
+  </body>
+</html>
