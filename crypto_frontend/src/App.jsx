@@ -31,7 +31,7 @@ function App() {
   const [requestText, setRequestText] = useState('');
   const [keyText, setKeyText] = useState('')
   const [resultText, setResultText] = useState('');
-  const [mkeyText,setMKeyText] = useState('');
+  const [mkeyText,setMKeyText] = useState(0);
   const [isShowMKey, setIsShowMKey] = useState(false);
   const [table,setTable] = useState();
   const [isShowDecrypt, setIsShowDecrypt] = useState(false);
@@ -165,8 +165,8 @@ function App() {
           "action" : crypt.toLowerCase(),
           "algorithm": method,
           "text": document.getElementById("plain/ciphertext").value,
-          "m": mkeyText.parseInt(),
-          "b": document.getElementById("key").value.parseInt(),
+          "m": mkeyText,
+          "b": Number.parseInt(document.getElementById("key").value),
         }
       };
     }
