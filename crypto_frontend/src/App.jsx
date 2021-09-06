@@ -88,7 +88,7 @@ function App() {
   })
   
   const trimAlphabetic = (text) => {
-    return text.replace(/[^A-Za-z0-9]/g, '');
+    return text.replace(/[^A-Za-z]/g, '');
   }
   
   const handleSubmit = (event) => {
