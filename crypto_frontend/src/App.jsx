@@ -87,15 +87,27 @@ function App() {
     }
   })
   
+  const trimAlphabetic = (text) => {
+    return text.replace(/[^A-Za-z0-9]/g, '');
+  }
+  
   const handleSubmit = (event) => {
     event.preventDefault();
     
     let data;
+    let text = document.getElementById("plain/ciphertext").value;
+    
+    
+    // If method chosen is Vigenere Base 26 or Playfair
+    if(method!='4' && method!='5'){
+      text = trimAlphabetic(text);
+    }
+    
     data = {
       "data": {
         "action" : crypt.toLowerCase(),
         "algorithm": method,
-        "text": document.getElementById("plain/ciphertext").value,
+        "text": text,
         "key": document.getElementById("key").value
       }
     };
