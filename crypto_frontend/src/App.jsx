@@ -107,7 +107,7 @@ function App() {
           "algorithm": method,
           "text": document.getElementById("plain/ciphertext").value,
           "m": mkeyText.parseInt(),
-          "b": document.getElementById("key").value,
+          "b": document.getElementById("key").value.parseInt(),
         }
       };
     }
