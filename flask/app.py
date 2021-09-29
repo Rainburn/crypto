@@ -4,6 +4,7 @@ from flask_cors import CORS, cross_origin
 from crypto_algorithm.affine import *
 from crypto_algorithm.playfair import *
 from crypto_algorithm.vigenere import *
+from crypto_algorithm.rc4 import *
 
 app = Flask(__name__)
 
@@ -65,6 +66,11 @@ def result():
                 result = affine_encrypt(plain, m, b)
                 return {'plain' : plain, 'm' : m, 'b' : b, 'cipher' : result}
 
+            elif (algo_id == "7"): # RC4
+                key = form['key']
+                result = rc4_encrypt(plain, key)
+                return {'plain' : plain, 'key' : key, 'cipher' : result}
+
         else : # action is decrypt
             cipher = form['text']
             algo_id = form['algorithm']
@@ -95,11 +101,16 @@ def result():
                 result = playfair_decrypt(cipher, key)
                 return {'plain' : result, 'key' : key, 'cipher' : cipher}
             
-            elif (algo_id == "6"):
+            elif (algo_id == "6"): # Affine
                 m = form['m']
                 b = form['b']
                 result = affine_decrypt(cipher, m, b)
                 return {'plain' : result, 'm' : m, 'b' : b, 'cipher' : cipher}
+
+            elif (algo_id == "7"): # RC4
+                key = form['key']
+                result = rc4_decrypt(cipher, key)
+                return {'plain' : result, 'key' : key, 'cipher' : cipher}
 
     else :
         return 'Invalid Access'

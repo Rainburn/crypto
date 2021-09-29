@@ -132,7 +132,63 @@ function App() {
     let data;
     let text = document.getElementById("plain/ciphertext").value;
     
+    if (method == '7') { // Method is RC4
+      data = {
+        "data": {
+          "action" : crypt.toLowerCase(),
+          "algorithm": method,
+          "text": text,
+          "key": document.getElementById("key").value
+        }
+      };
+      
+      if(isShowDecrypt){
+        data = {
+          "data": {
+            "action" : crypt.toLowerCase(),
+            "algorithm": method,
+            "text": text,
+            "key": document.getElementById("key").value,
+            "table": table,
+          }
+        };
+      }
+      
+      if(isShowMKey){
+        data = {
+          "data": {
+            "action" : crypt.toLowerCase(),
+            "algorithm": method,
+            "text": document.getElementById("plain/ciphertext").value,
+            "m": mkeyText,
+            "b": Number.parseInt(document.getElementById("key").value),
+          }
+        };
+      }
+      
+      axios.post(`http://127.0.0.1:5000/result`, data)
+        .then(res => {
+          const result = crypt.toLowerCase() === 'encrypt' ? res.data.cipher: res.data.plain;
+          var resultText = "";
+          var resLength = result.length
+
+          var i = 0;
+          while (i < resLength) {
+            resultText += String.fromCharCode(result[i]);
+            i++;
+          }
+          setResultText(resultText)
+          
+          if(res.data.table!=undefined){
+            downloadCsv(res.data.table);
+          }
+        })
+        
+        return
     
+      }
+    
+
     // If method chosen is Vigenere Base 26 or Playfair
     if(method!='4' && method!='5'){
       text = trimAlphabetic(text);
@@ -336,6 +392,7 @@ function App() {
                     <FormControlLabel value="4" control={<Radio />} label="Extended Vigenere" />
                     <FormControlLabel value="5" control={<Radio />} label="Playfair" />
                     <FormControlLabel value="6" control={<Radio />} label="Affine" />
+                    <FormControlLabel value="7" control={<Radio />} label="RC4" />
                   </RadioGroup>
                 </Box>
                 <Box p={1} flexGrow={1}>
