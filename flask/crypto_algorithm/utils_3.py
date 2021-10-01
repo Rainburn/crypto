@@ -1,8 +1,9 @@
 import os
 import io
-import PIL.Image as Image
+from PIL import Image, ImageFile
 import math
 import random
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 from array import array
 
@@ -49,6 +50,7 @@ def write_image(path, stego):
   byteimg = io.BytesIO(stego)
   image = Image.open(byteimg)
   image.save(path)
+  image.save("compressed_"+path,optimize=True,quality=30) 
   
 def rms(cover, stego):
   m = len(cover)

@@ -1,8 +1,8 @@
 from utils_3 import *
 import time
-def embed_image_sequential(input_file, output_file):
+def embed_image_sequential(input_file, output_file, type="BMP"):
   # Read image Images
-  b_array_list = readimage2(input_file)   
+  b_array_list = readimage2(input_file, type)   
 
   message = "Hi humans! Thank you for listening to Inka's TEDx. Have a good year"
   message_byte = bytearray(message, "utf-8")
@@ -168,7 +168,7 @@ def extract_image_random(input_file, seed):
   print(message_byte)
   
 # MAIN PROGRAM
-# embed_image_sequential("sample.bmp", "secret_sample1.bmp")
-embed_image_random("sample.bmp", "secret_sample_random.bmp", 2)
+embed_image_sequential("png_sample.png", "png_secret_sample.png", "PNG")
+# embed_image_random("sample.bmp", "secret_sample_random.bmp", 2)
 # extract_image_sequential("secret_sample1.bmp")
-extract_image_random("secret_sample_random.bmp", 2)
+# extract_image_random("secret_sample_random.bmp", 2)
