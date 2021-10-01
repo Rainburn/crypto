@@ -185,7 +185,17 @@ def embed_message(audio_name, embedded_filename, target_filename):
     # Embedded Message length metadata
     stego_data[1][0] = length_embedded_data
 
-    avail_space = aud_length - 2
+    # File type
+    filetype = embedded_filename.split('.')[1]
+    length_filetype = len(filetype)
+    
+    stego_data[2][0] = length_filetype
+
+    for i in range(length_filetype):
+        stego_data[3+i][0] = ord(filetype[i])
+
+    shifts = length_filetype + 3
+    avail_space = aud_length - shifts
 
     # Check if space is enough for embedded data
     if (avail_space < 8 * len(embedded_data)):
@@ -199,13 +209,13 @@ def embed_message(audio_name, embedded_filename, target_filename):
         ord_in_bin = format(curr_ord, '08b')
 
         for j in range(len(ord_in_bin)):
-            base_2_amp = format(stego_data[2+i*8+j][0], 'b')
+            base_2_amp = format(stego_data[shifts+i*8+j][0], 'b')
             
             # Swap LSB
             temp = base_2_amp[0:len(base_2_amp)-1]
             temp = temp + ord_in_bin[j]
 
-            stego_data[2+i*8+j][0] = int(temp, 2)
+            stego_data[shifts+i*8+j][0] = int(temp, 2)
 
 
     write_audio(target_filename, rate, stego_data)
@@ -224,6 +234,16 @@ def retrieve_embedded(stego_filename, hidden_filename):
     length_hidden_in_byte = stego_data[1][0]
     length_hidden_in_bit = 8 * length_hidden_in_byte
 
+    # Filetype
+    length_filetype = stego_data[2][0]
+    filetype_as_string = ""
+
+    for i in range(length_filetype):
+        filetype_as_string = filetype_as_string + chr(stego_data[3+i][0])
+
+    # Shifts
+    shifts = 3 + length_filetype
+
     hidden_data_as_byte = ""
 
     count = 0
@@ -231,7 +251,7 @@ def retrieve_embedded(stego_filename, hidden_filename):
     for i in range(length_hidden_in_bit):
         count = count + 1
 
-        stego_amp_as_bit = format(stego_data[2+i][0], 'b')
+        stego_amp_as_bit = format(stego_data[shifts+i][0], 'b')
 
         fragment = fragment + stego_amp_as_bit[len(stego_amp_as_bit)-1]
 
@@ -244,7 +264,7 @@ def retrieve_embedded(stego_filename, hidden_filename):
             count = 0
 
 
-    save_file_binary(hidden_filename, hidden_data_as_byte)
+    save_file_binary(hidden_filename + "." + filetype_as_string, hidden_data_as_byte)
 
     return 
 
@@ -259,6 +279,6 @@ my_message = "Hello from the another side"
 # print(f"Rate : {rate}")
 # print(f"Length of DataArray : {len(data)}")
 
-embed_message("wavexample.wav", "video.py", "stego_audio2.wav")
+embed_message("wavexample.wav", "count_db.png", "stego_audio_img.wav")
 
-retrieve_embedded("stego_audio2.wav", "video_hidden")
+retrieve_embedded("stego_audio_img.wav", "hidden_pic2")
