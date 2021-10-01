@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import wave
 import math
 import io
+import random
+from rc4 import *
 
 def read_audio(filename):
     samplerate, data = wavfile.read(filename)
@@ -164,14 +166,30 @@ def convert_data_to_ord(data):
     return ord_data
 
 
-def embed_message(audio_name, embedded_filename, target_filename):
+def convert_ord_to_bytes_string(ord_array):
+    ord_str = ""
+    for i in range(len(ord_array)):
+        ord_str = ord_str + chr(ord_array[i])
+
+    return ord_str
+
+
+def embed_message(audio_name, embedded_filename, target_filename, key=""):
 
     rate, audio_data = read_audio(audio_name)
     embedded_data = read_file_binary(embedded_filename)
+    length_embedded_data = 0
 
-    # Embedded data must be in array of ord, thus we convert
-    embedded_data = convert_data_to_ord(embedded_data)
-    length_embedded_data = len(embedded_data)
+
+    if (key != ""): # Use RC4
+        embedded_data = rc4_encrypt(embedded_data, key)
+        length_embedded_data = len(embedded_data)
+
+    else :
+        # Embedded data must be in array of ord, thus we convert
+
+        embedded_data = convert_data_to_ord(embedded_data)
+        length_embedded_data = len(embedded_data)
 
 
     stego_data = audio_data.copy()
@@ -180,7 +198,8 @@ def embed_message(audio_name, embedded_filename, target_filename):
     # Reduce Available bytes with Metadata
 
     # Random metadata
-    stego_data[0][0] = 0 # 0 if Seq, 1 if random
+    stego_data[0][0] = 0 # Seed
+    # random.seed(seed)
 
     # Embedded Message length metadata
     stego_data[1][0] = length_embedded_data
@@ -209,13 +228,14 @@ def embed_message(audio_name, embedded_filename, target_filename):
         ord_in_bin = format(curr_ord, '08b')
 
         for j in range(len(ord_in_bin)):
-            base_2_amp = format(stego_data[shifts+i*8+j][0], 'b')
+            idx = ((i * 8 + j)) % avail_space
+            base_2_amp = format(stego_data[shifts+idx][0], 'b')
             
             # Swap LSB
             temp = base_2_amp[0:len(base_2_amp)-1]
             temp = temp + ord_in_bin[j]
 
-            stego_data[shifts+i*8+j][0] = int(temp, 2)
+            stego_data[shifts+idx][0] = int(temp, 2)
 
 
     write_audio(target_filename, rate, stego_data)
@@ -225,12 +245,14 @@ def embed_message(audio_name, embedded_filename, target_filename):
 
 
 
-def retrieve_embedded(stego_filename, hidden_filename):
+def retrieve_embedded(stego_filename, hidden_filename, key=""):
 
     rate, stego_data = read_audio(stego_filename)
+    aud_length = len(stego_data)
 
     # Read metadata
-    is_random = stego_data[0][0]
+    seed = stego_data[0][0]
+    random.seed(seed)
     length_hidden_in_byte = stego_data[1][0]
     length_hidden_in_bit = 8 * length_hidden_in_byte
 
@@ -243,6 +265,7 @@ def retrieve_embedded(stego_filename, hidden_filename):
 
     # Shifts
     shifts = 3 + length_filetype
+    avail_space = aud_length - shifts
 
     hidden_data_as_byte = ""
 
@@ -251,7 +274,8 @@ def retrieve_embedded(stego_filename, hidden_filename):
     for i in range(length_hidden_in_bit):
         count = count + 1
 
-        stego_amp_as_bit = format(stego_data[shifts+i][0], 'b')
+        idx = (i) % avail_space
+        stego_amp_as_bit = format(stego_data[shifts+idx][0], 'b')
 
         fragment = fragment + stego_amp_as_bit[len(stego_amp_as_bit)-1]
 
@@ -263,6 +287,8 @@ def retrieve_embedded(stego_filename, hidden_filename):
             fragment = ""
             count = 0
 
+    if (key != ""): # Use RC4
+        hidden_data_as_byte = convert_ord_to_bytes_string(rc4_decrypt(hidden_data_as_byte, key))
 
     save_file_binary(hidden_filename + "." + filetype_as_string, hidden_data_as_byte)
 
@@ -279,6 +305,6 @@ my_message = "Hello from the another side"
 # print(f"Rate : {rate}")
 # print(f"Length of DataArray : {len(data)}")
 
-embed_message("wavexample.wav", "count_db.png", "stego_audio_img.wav")
+embed_message("wavexample.wav", "count_db.png", "stego_audio_img.wav", "INKABESOKTEDX")
 
-retrieve_embedded("stego_audio_img.wav", "hidden_pic2")
+retrieve_embedded("stego_audio_img.wav", "hidden_pic2", "INKABESOKTEDX")
