@@ -74,3 +74,42 @@ def create_full_vigenere_table():
         random.shuffle(random_alphabet)
         table[i] = random_alphabet
     return table
+
+
+# XOR Bitwise on base 256
+def xor_base256(a, b):
+
+    a = '{:08b}'.format(a)
+    b = '{:08b}'.format(b)
+
+    length_a = len(a)
+    length_b = len(b)
+
+    # print(f"a : {a}")
+    # print(f"b : {b}")
+
+    result = ""
+
+    for i in range(length_a):
+        a_frag = int(a[i])
+        b_frag = int(b[i])
+        res_frag = (a_frag + b_frag) % 2
+
+        result = result + str(res_frag)
+    
+    # print(f"result : {result}")
+
+    return result
+
+
+# String-byte to string convert
+def stringbyte_to_string(string_byte):
+    str_bin = int(string_byte,2)
+
+    # print(str_bin)
+
+    char_res = chr(str_bin)
+
+    # print(char_res)
+
+    return char_res

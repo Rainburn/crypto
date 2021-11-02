@@ -1,0 +1,7 @@
+Initial Plain : HOLY SLASH JEKI WHAT THE FUCK
+Cipher : 3«ÿ*O4aÝU÷¤þ÷áû#'U>
+Plain : HOLY SLASH JEKI WHAT THE FUCK
+
+Initial Plain : SOMEPLAINTEXT
+Cipher : Úp!ÚÉéh÷£7
+Plain : SOMEPLAINTEXT
