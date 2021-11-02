@@ -5,6 +5,8 @@ from crypto_algorithm.affine import *
 from crypto_algorithm.playfair import *
 from crypto_algorithm.vigenere import *
 from crypto_algorithm.rc4 import *
+from crypto_algorithm.rsa import *
+from crypto_algorithm.paillier import *
 
 app = Flask(__name__)
 
@@ -71,6 +73,18 @@ def result():
                 result = rc4_encrypt(plain, key)
                 return {'plain' : plain, 'key' : key, 'cipher' : result}
 
+            elif (algo_id == "8"): # RSA
+                e = form['e']
+                n = form['n']
+                result = rsa_encrypt(plain, e, n)
+                return {'plain' : plain, 'e' : e, 'n' : n, 'cipher' : result}
+
+            elif (algo_id == "9"): # Paillier
+                g = form['g']
+                n = form['n']
+                result = paillier_encrypt(plain, g, n)
+                return {'plain' : plain, 'g' : g, 'n' : n, 'cipher' : result}
+
         else : # action is decrypt
             cipher = form['text']
             algo_id = form['algorithm']
@@ -111,6 +125,20 @@ def result():
                 key = form['key']
                 result = rc4_decrypt(cipher, key)
                 return {'plain' : result, 'key' : key, 'cipher' : cipher}
+
+            elif (algo_id == "8"): # RSA
+                d = form['d']
+                n = form['n']
+                result = rsa_decrypt(cipher, d, n)
+                return {'plain' : result, 'd' : d, 'n' : n, 'cipher' : cipher}
+
+            elif (algo_id == "9"): # Paillier
+                n = form['n']
+                lambd = form['lambda']
+                u = form['u']
+                result = paillier_decrypt(cipher, n, lambd, u)
+                return {'plain' : result, 'n' : n, 'lambda' : lambd, 'u' : u, 'cipher' : cipher}
+
 
     else :
         return 'Invalid Access'
