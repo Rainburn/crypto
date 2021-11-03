@@ -32,6 +32,22 @@ def generate_keys():
         public_key = elgamal.generate_public_keys()
         private_key = elgamal.generate_private_keys()
         return {'public_key': public_key, 'private_key': private_key}
+
+    elif (form['algo_id'] == "8"): # RSA
+        p = int(form['p'])
+        q = int(form['q'])
+        e = int(form['e'])
+
+        keys = rsa.create_keys(p, q, e)
+        return {'public_key' : keys['public'], 'private_key' : keys['private']}
+
+    elif (form['algo_id'] == "9"): # Paillier
+        p = int(form['p'])
+        q = int(form['q'])
+        g = int(form['g'])
+        
+        keys = paillier.create_keys(p, q, g)
+        return {'public_key' : keys['public'], 'private_key' : keys['private']}
     
 @app.route('/result',methods = ['POST', 'GET'])
 def result():
@@ -110,9 +126,9 @@ def result():
                 elgamal = Elgamal(p, g, x, k)
                 keys = elgamal.generate_public_keys()
                 result = elgamal.encrypt(plaintext, keys)
-                return {'result': result}
-        
-        
+                return {'result': result} 
+
+
         else : # action is decrypt
             cipher = form['text']
             algo_id = form['algorithm']
