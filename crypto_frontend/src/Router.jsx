@@ -6,6 +6,7 @@ import Steganography from './Steganography';
 import ECC from './ECC';
 import Elgamal from './Elgamal';
 import Pailier from './Pailier';
+import RSA from './RSA';
 
 const Router= () => {
   return <BrowserRouter>
@@ -15,6 +16,7 @@ const Router= () => {
       <Route path="/ecc" component={ECC}/>
       <Route path="/elgamal" component={Elgamal}/>
       <Route path="/pailier" component={Pailier} />
+      <Route path="/rsa" component={RSA} />
     </Switch>
   </BrowserRouter>
 }

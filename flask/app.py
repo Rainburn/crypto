@@ -107,8 +107,8 @@ def result():
                 return {'plain' : plain, 'key' : key, 'cipher' : result}
 
             elif (algo_id == "8"): # RSA
-                e = form['e']
-                n = form['n']
+                e = int(form['e'])
+                n = int(form['n'])
                 result = rsa_encrypt(plain, e, n)
                 return {'plain' : plain, 'e' : e, 'n' : n, 'cipher' : result}
 
@@ -176,8 +176,8 @@ def result():
                 return {'plain' : result, 'key' : key, 'cipher' : cipher}
 
             elif (algo_id == "8"): # RSA
-                d = form['d']
-                n = form['n']
+                d = int(form['d'])
+                n = int(form['n'])
                 result = rsa_decrypt(cipher, d, n)
                 return {'plain' : result, 'd' : d, 'n' : n, 'cipher' : cipher}
 

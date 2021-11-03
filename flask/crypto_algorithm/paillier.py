@@ -132,10 +132,10 @@ def paillier_decrypt(cipher_string, n, lambd, u):
 # keys = create_keys(p, q, 5652)
 # print(keys)
 
-# Private Keys
+# # Private Keys
 
-# lamb = keys['private'][0]
-# u = keys['private'][1]
+# # lamb = keys['private'][0]
+# # u = keys['private'][1]
 
 # plain = "RafiA"
 # c = paillier_encrypt(plain, 5652, n)
