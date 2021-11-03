@@ -100,12 +100,13 @@ def result():
                 n = form['n']
                 result = paillier_encrypt(plain, g, n)
                 return {'plain' : plain, 'g' : g, 'n' : n, 'cipher' : result}
+                
             elif (algo_id == "10") : # Elgamal
-                g = form["g"]
-                p = form["p"]
-                x = form["x"]
-                k = form["k"]
-                plaintext = form["plaintext"]
+                g = int(form["g"])
+                p = int(form["p"])
+                x = int(form["x"])
+                k = int(form["k"])
+                plaintext = form["text"]
                 
                 elgamal = Elgamal(p, g, x, k)
                 keys = elgamal.generate_public_keys()
@@ -166,6 +167,18 @@ def result():
                 u = form['u']
                 result = paillier_decrypt(cipher, n, lambd, u)
                 return {'plain' : result, 'n' : n, 'lambda' : lambd, 'u' : u, 'cipher' : cipher}
+            
+            elif (algo_id == "10") : # Elgamal
+                g = int(form["g"])
+                p = int(form["p"])
+                x = int(form["x"])
+                k = int(form["k"])
+                plaintext = form["text"]
+                
+                elgamal = Elgamal(p, g, x, k)
+                keys = elgamal.generate_private_keys()
+                result = elgamal.decrypt(plaintext, keys)
+                return {'result': result}
 
         
     else :

@@ -5,9 +5,7 @@ import {
   Typography, 
   TextField,
   Container,
-  FormControlLabel,
   Box,
-  Switch,
 } from '@material-ui/core';
 import styles from './App.module.css';
 import axios from "axios";
@@ -24,7 +22,7 @@ const Elgamal = () => {
   
   const copyToClipboard = (text) => {
     const el = document.createElement('textarea');
-    el.value = text.replace(/ /g,'');
+    el.value = text.replace(/ /g,' ');
     document.body.appendChild(el);
     el.select();
     document.execCommand('copy');
@@ -90,24 +88,31 @@ const Elgamal = () => {
     data = {
       "data": {
         "action": "encrypt",
-        "algorithm": "elgamal",
+        "algorithm": "10",
         //TODO: Ini harusnya diganti sama public key nya
         "p": document.getElementById("p").value,
         "g": document.getElementById("g").value,
         "x": document.getElementById("x").value,
         "k": document.getElementById("k").value,
-        "plaintext": document.getElementById("plaintext").value
+        "text": document.getElementById("plaintext").value
       }
     }
     
     axios.post(`http://127.0.0.1:5000/result`, data)
         .then(res => {
           const result = res.data;
-          setResultText(result);
-          console.log("Public Key:");
-          console.log(result.public_key);
-          console.log("Private Key: ")
-          console.log(result.private_key);
+          // setResultText(result);
+          console.log("Result");
+          console.log(result);
+          
+          const normalizedResult1 = result.result.map(value =>
+            value.join(","));
+          console.log(normalizedResult1);
+           
+          const normalizedResult2 = normalizedResult1.join(" ");
+          console.log(normalizedResult2);
+          console.log(typeof normalizedResult2);
+          setResultText(normalizedResult2);
         })
   }
   
@@ -118,20 +123,22 @@ const Elgamal = () => {
     data = {
       "data": {
         "action": "decrypt",
-        "algorithm": "elgamal",
+        "algorithm": "10",
         //TODO: Ini harusnya diganti sama private key nya
         "p": document.getElementById("p").value,
         "g": document.getElementById("g").value,
         "x": document.getElementById("x").value,
         "k": document.getElementById("k").value,
-        "text": document.getElementById("plaintext").value
+        "text": document.getElementById("ciphertext").value
       }
     }
     
-    axios.post(`http://127.0.0.1:5000/generate-public-key`, data)
+    axios.post(`http://127.0.0.1:5000/result`, data)
     .then(res => {
       const result = res.data;
-      setResultText(result);
+      console.log("Plainteks: ");
+      console.log(result);
+      setResultText(result.result);
     })
   }
   
@@ -201,17 +208,7 @@ const Elgamal = () => {
       </Box>     
       </form>
         
-      
-        
-      {/* <TextField 
-        required 
-        id="key" 
-        type={isShowMKey ? 'number' : 'string'}
-        label={isShowMKey ? 'B Key' : 'Key'}
-        fullWidth 
-        multiline 
-        focused
-      /> */}
+    
       <form noValidate autoComplete="off" onSubmit={handleSubmitDecrypt}>    
       <TextField 
         required 
@@ -240,9 +237,6 @@ const Elgamal = () => {
             <Typography id="result" variant="h5" gutterBottom gutterTop>
                 {resultText}
             </Typography>
-            <FormControlLabel
-        label="5 chunks"
-      />
           </Box>
           <Box p={1}>
             <IconButton aria-label="download" onClick={downloadTxtFile}>
