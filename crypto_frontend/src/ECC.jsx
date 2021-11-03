@@ -101,7 +101,7 @@ const Tugas1 = () => {
     const element = document.createElement("a");
     const file = new Blob([resultText], {type: 'text/plain'});
     element.href = URL.createObjectURL(file);
-    element.download = "key.txt";
+    element.download = "cryptography.txt";
     document.body.appendChild(element); // Required for this to work in FireFox
     element.click();
   }

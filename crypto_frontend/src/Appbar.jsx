@@ -72,6 +72,16 @@ function App() {
                 Steganography
             </Button>
           </Link>
+          <Link to="/elgamal">
+            <Button>
+                Elgamal
+            </Button>
+          </Link>
+          <Link to="/ecc">
+            <Button>
+                ECC
+            </Button>
+          </Link>
         </Toolbar>
       </AppBar>
 </>
