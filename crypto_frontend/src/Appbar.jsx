@@ -1,4 +1,4 @@
-import React, {} from "react";
+import React, {useState} from "react";
 import { createTheme, ThemeProvider, StylesProvider } from '@material-ui/core/styles';
 import {
   AppBar, 
@@ -10,26 +10,27 @@ import {
   List,
   ListItem,
   ListItemText,
-  Link,
+  Tabs,
+  Tab,
   Button,
 } from '@material-ui/core';
 
 import CssBaseline from "@material-ui/core/CssBaseline";
 import {BrowserRouter, Route, Switch} from 'react-router-dom';
 import Tugas1 from './Tugas1';
-import { Link as RouterLink, MemoryRouter as Router } from 'react-router-dom';
+import { Link , MemoryRouter as Router } from 'react-router-dom';
 
 
 // import MailIcon from '@material-ui/icons/MailIcon';
 // import InboxIcon from '@material-ui/icons/InboxIcon';
 import styles from './App.module.css';
 
-const LinkBehavior = React.forwardRef((props, ref) => (
-  <RouterLink ref={ref} to="/tugas1" {...props} />
-));
+// const LinkBehavior = React.forwardRef((props, ref) => (
+//   <RouterLink ref={ref} to="/tugas1" {...props} />
+// ));
 
 function App() {
-  
+  const [value, setValue] = useState(0);
 
   const baseTheme = createTheme({
     typography: {
@@ -51,42 +52,41 @@ function App() {
       }
     }
   })
+  
+  const changeTab = (event) => {
+    setValue(event.target.value);
+  }
 
   return (
 <>
       <AppBar className={styles.appBar} position="static">
         <Toolbar>
-          <IconButton edge="start" color="inherit" aria-label="menu">
+          <IconButton edge="start" color="inherit" aria-label="menu" >
           </IconButton>
           <Typography variant="h6">
             Kriptografi
           </Typography>
           
-          <Link to="/tugas1">
-            <Button>
-                Tugas 1 + Rc4
-            </Button>
-          </Link>
-          <Link to="/steganography">
-            <Button>
-                Steganography
-            </Button>
-          </Link>
-          <Link to="/elgamal">
-            <Button>
-                Elgamal
-            </Button>
-          </Link>
-          <Link to="/ecc">
-            <Button>
-                ECC
-            </Button>
-          </Link>
-          <Link to="/pailier">
-            <Button>
-                Pailier
-            </Button>
-          </Link>
+          <Button component={Link} to="/">
+              Tugas 1 + Rc4
+          </Button>
+
+          <Button component={Link} to="/steganography">
+              Steganography
+          </Button>
+          <Button component={Link} to="/rsa">
+              RSA
+          </Button>
+          <Button component={Link} to="/pailier">
+              Pailier
+          </Button>
+          <Button component={Link} to="/elgamal">
+              Elgamal
+          </Button>
+          <Button component={Link} to="/ecc">
+              ECC
+          </Button>
+          
         </Toolbar>
       </AppBar>
 </>

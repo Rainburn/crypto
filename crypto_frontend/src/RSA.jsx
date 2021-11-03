@@ -183,6 +183,47 @@ const Elgamal = () => {
           </Box>
       </Box>
       </form>
+      {publicKey !==[] && (
+      <Box display="flex" flexDirection="row" >
+          <Box p={1} flexGrow={1}>
+            <Typography id="result-label" variant="h5" gutterBottom gutterTop>
+                Public Key:
+            </Typography>
+            <Typography id="result" variant="h5" gutterBottom gutterTop>
+                {publicKey.join(",")}
+            </Typography>
+          </Box>
+          <Box p={1}>
+            <IconButton aria-label="download" onClick={downloadTxtFile}>
+              <GetAppIcon />
+            </IconButton>
+            <IconButton aria-label="download" onClick={() => copyToClipboard(resultText)}>
+              <FileCopyIcon />
+            </IconButton>
+          </Box>
+      </Box>
+      )}
+      
+      {privateKey !==[] && (
+      <Box display="flex" flexDirection="row" >
+          <Box p={1} flexGrow={1}>
+            <Typography id="result-label" variant="h5" gutterBottom gutterTop>
+                Private Key:
+            </Typography>
+            <Typography id="result" variant="h5" gutterBottom gutterTop>
+                {privateKey.join(",")}
+            </Typography>
+          </Box>
+          <Box p={1}>
+            <IconButton aria-label="download" onClick={downloadTxtFile}>
+              <GetAppIcon />
+            </IconButton>
+            <IconButton aria-label="download" onClick={() => copyToClipboard(resultText)}>
+              <FileCopyIcon />
+            </IconButton>
+          </Box>
+      </Box>
+      )}
       <form noValidate autoComplete="off" onSubmit={handleSubmitEncrypt}>    
       <Box display="flex" flexDirection="row" >
           <Box p={1} flexGrow={1}>
