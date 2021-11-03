@@ -1,6 +1,5 @@
 import React from 'react';
 import {BrowserRouter, Route, Switch} from 'react-router-dom';
-import Appbar from './Appbar';
 import Tugas1 from './Tugas1';
 import Steganography from './Steganography';
 import ECC from './ECC';

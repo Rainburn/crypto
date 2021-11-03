@@ -16,7 +16,6 @@ import Layout from './Layout';
 const Elgamal = () => {
   const [requestText, setRequestText] = useState('');
   const [resultText, setResultText] = useState('');
-  const [table,setTable] = useState();
   const [publicKey, setPublicKey] = useState([]);
   const [privateKey, setPrivateKey] = useState([]);
   
