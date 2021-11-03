@@ -141,10 +141,10 @@ def rsa_decrypt(cipher_string, d, n):
     return plain_string
 
 
-keys = create_keys(1019, 1039, 79)
-e = keys['public'][0]
-n = keys['public'][1]
-d = keys['private'][0]
+# keys = create_keys(1019, 1039, 79)
+# e = keys['public'][0]
+# n = keys['public'][1]
+# d = keys['private'][0]
 
-cipher_string = rsa_encrypt("HELLORAISSA  2211 Princess", e, n)
-rsa_decrypt(cipher_string, d, n)
+# cipher_string = rsa_encrypt("HELLORAISSA  2211 Princess", e, n)
+# rsa_decrypt(cipher_string, d, n)

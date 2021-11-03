@@ -44,6 +44,8 @@ def create_keys(p, q, g):
         "public": (g, n),
         "private": (lambd, u)
     }
+    
+    print(keys)
 
     return keys
 
@@ -132,10 +134,10 @@ print(keys)
 
 # Private Keys
 
-lamb = keys['private'][0]
-u = keys['private'][1]
+# lamb = keys['private'][0]
+# u = keys['private'][1]
 
-plain = "R4f 1"
-c = paillier_encrypt(plain, 5652, n)
-m = paillier_decrypt(c, n, lamb, u)
-print(f"m : {m}")
+# plain = "R4f 1"
+# c = paillier_encrypt(plain, 5652, n)
+# m = paillier_decrypt(c, n, lamb, u)
+# print(f"m : {m}")

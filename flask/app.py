@@ -5,8 +5,8 @@ from crypto_algorithm.affine import *
 from crypto_algorithm.playfair import *
 from crypto_algorithm.vigenere import *
 from crypto_algorithm.rc4 import *
-# from crypto_algorithm.rsa import *
-# from crypto_algorithm.paillier import *
+from crypto_algorithm.rsa import *
+from crypto_algorithm.paillier import *
 from crypto_algorithm.elgamal import *
 
 app = Flask(__name__)
@@ -22,7 +22,15 @@ def student():
 def generate_keys():
     payload = request.json
     form = payload['data']
-    if(form["algo_id"] == "10"): # Elgamal
+    
+    if(form["algo_id"] == "9"):
+        p = int(form["p"])
+        q = int(form["q"])
+        g = int(form["g"])
+        
+        return create_keys(p, q, g)
+        
+    elif(form["algo_id"] == "10"): # Elgamal
         g = int(form["g"])
         p = int(form["p"])
         x = int(form["x"])
@@ -96,8 +104,11 @@ def result():
                 return {'plain' : plain, 'e' : e, 'n' : n, 'cipher' : result}
 
             elif (algo_id == "9"): # Paillier
-                g = form['g']
-                n = form['n']
+                g = int(form['g'])
+                p = int(form['p'])
+                q = int(form['q'])
+                
+                n = p * q
                 result = paillier_encrypt(plain, g, n)
                 return {'plain' : plain, 'g' : g, 'n' : n, 'cipher' : result}
                 
@@ -162,9 +173,11 @@ def result():
                 return {'plain' : result, 'd' : d, 'n' : n, 'cipher' : cipher}
 
             elif (algo_id == "9"): # Paillier
-                n = form['n']
-                lambd = form['lambda']
-                u = form['u']
+                p = int(form['p'])
+                q = int(form['q'])
+                lambd = int(form['lambda'])
+                u = int(form['u'])
+                n = p * q
                 result = paillier_decrypt(cipher, n, lambd, u)
                 return {'plain' : result, 'n' : n, 'lambda' : lambd, 'u' : u, 'cipher' : cipher}
             

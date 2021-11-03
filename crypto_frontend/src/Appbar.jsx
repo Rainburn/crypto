@@ -82,6 +82,11 @@ function App() {
                 ECC
             </Button>
           </Link>
+          <Link to="/pailier">
+            <Button>
+                Pailier
+            </Button>
+          </Link>
         </Toolbar>
       </AppBar>
 </>
