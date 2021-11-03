@@ -113,3 +113,21 @@ def stringbyte_to_string(string_byte):
     # print(char_res)
 
     return char_res
+
+
+def gcd(a, b):
+    min_number = a if (a < b) else b
+
+    for j in range(min_number, 0, -1):
+        if (a % j == 0 and b % j == 0):
+            return j
+
+def is_prime(n):
+    if (n == 1):
+        return False
+
+    for j in range(n-1, 1, -1):
+        if (n % j == 0):
+            return False
+    
+    return True
