@@ -124,7 +124,6 @@ class ECC:
     
     for x in range(self.p * self.p):
       y = pow((x ** 3 + self.a * x + self.b) % self.p, 0.5)
-      print(y)
       
       if(y==math.floor(y) and y!=0):
         new_point = Point(x, int(y))
@@ -160,8 +159,8 @@ class ECC:
     for i in range(len(points)):
       encoded[(points[i].x, points[i].y)] = chr(i % 128)
     
-    print("halo ink")
-    print(encoded)
+    # print("halo ink")
+    # print(encoded)
     return encoded
   
   def encrypt(self, plaintext, k, P, pb):
@@ -186,7 +185,6 @@ class ECC:
       
       Pc = (kB, addition(Point(Pm[0],Pm[1]), kP, self.p, self.a))
       Pc = ((Pc[0].x, Pc[0].y), (Pc[1].x, Pc[1].y))
-      print(Pc)
       enc['encoding'].append(Pc)
       enc['text'] += encoded[Pc[1]]
     
@@ -194,30 +192,35 @@ class ECC:
     return enc
               
   def decrypt(self, ciphertext, b):
-    cipher = ciphertext.split(' ')
-    cipher_encoded = []
-    for c in cipher:
-      a = list(map(int, cip.split(',')))
-      cipher_encoded.append(((a[0],a[1]), (a[2], a[3])))
+    # cipher = ciphertext.split(' ')
+    # cipher_encoded = []
+    # for c in cipher:
+    #   a = list(map(int, cip.split(',')))
+    #   cipher_encoded.append(((a[0],a[1]), (a[2], a[3])))
     
-    decoded = self.get_encoded_char()
+    decoded = self.encoded()
     
     plaintext = ''
     
-    for c in cipher_encoded:
-      bKb = multiple(b, c[0], self.p, self.a)
-      d = substract(enc[1], bKb, self.p, self.a)
-      plaintext += decoded[d]
+    for c in ciphertext:
+      bKb = multiple(b, Point(c[0][0], c[0][1]), self.p, self.a)
+      d = substract(Point(c[1][0], c[1][1]), bKb, self.p, self.a)
+      plaintext += decoded[(d.x,d.y)]
       
     return plaintext
     
-a = ECC(2, 1, 5)
-public = a.generate_public_keys(2, Point(0,1))
-private = a.generate_private_keys(3, Point(0,1))
+a = ECC(-1, 188, 751)
 points = a.get_points()
+list_points = list(points.values())
+print(list_points[0][0].x, list_points[0][0].y)
+public = a.generate_public_keys(-1, Point(0,375))
+private = a.generate_private_keys(188, Point(0,375))
+
 print(public.x, public.y)
 print()
 print(private.x, public.y)
-print(points)
-enc = a.encrypt("\x00", 2, Point(0,1), Point(0,1))
+enc = a.encrypt("inka", 2, Point(0,375), Point(0,375))
 print("enc", enc)
+
+dec = a.decrypt(enc["encoding"], 188)
+print("dec", dec)

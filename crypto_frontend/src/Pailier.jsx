@@ -130,6 +130,7 @@ const Elgamal = () => {
       const result = res.data;
       console.log("Plainteks: ");
       console.log(result);
+      setResultText(result.plain)
 
     })
   }
