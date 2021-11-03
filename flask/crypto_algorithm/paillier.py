@@ -1,11 +1,11 @@
-from utils import *
+from .utils import *
 import random
 
 def l_function(x, n):
     return int((x - 1)/n)
 
 
-def create_keys(p, q, g):
+def paillier_create_keys(p, q, g):
     # P and Q must be prime numbers
     if ((not is_prime(p)) or (not is_prime(q))):
         print("P or Q is not prime")
@@ -126,19 +126,19 @@ def paillier_decrypt(cipher_string, n, lambd, u):
     return "".join(plain_blocks)
 
 
-p = 1019
-q = 1039
-n = p * q
-keys = create_keys(p, q, 5652)
-print(keys)
+# p = 1019
+# q = 1039
+# n = p * q
+# keys = create_keys(p, q, 5652)
+# print(keys)
 
-# Private Keys
+# # Private Keys
 
-# lamb = keys['private'][0]
-# u = keys['private'][1]
+# # lamb = keys['private'][0]
+# # u = keys['private'][1]
 
-plain = "RafiA"
-c = paillier_encrypt(plain, 5652, n)
-m = paillier_decrypt(c, n, lamb, u)
-print(f"Cipher : {c}")
-print(f"Plain res : {m}")
+# plain = "RafiA"
+# c = paillier_encrypt(plain, 5652, n)
+# m = paillier_decrypt(c, n, lamb, u)
+# print(f"Cipher : {c}")
+# print(f"Plain res : {m}")

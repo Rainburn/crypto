@@ -39,7 +39,7 @@ def generate_keys():
         q = int(form['q'])
         e = int(form['e'])
 
-        keys = rsa.create_keys(p, q, e)
+        keys = rsa_create_keys(p, q, e)
         return {'public_key' : keys['public'], 'private_key' : keys['private']}
 
     elif (form['algo_id'] == "9"): # Paillier
@@ -47,7 +47,7 @@ def generate_keys():
         q = int(form['q'])
         g = int(form['g'])
         
-        keys = paillier.create_keys(p, q, g)
+        keys = paillier_create_keys(p, q, g)
         return {'public_key' : keys['public'], 'private_key' : keys['private']}
     
 @app.route('/result',methods = ['POST', 'GET'])
@@ -107,8 +107,8 @@ def result():
                 return {'plain' : plain, 'key' : key, 'cipher' : result}
 
             elif (algo_id == "8"): # RSA
-                e = form['e']
-                n = form['n']
+                e = int(form['e'])
+                n = int(form['n'])
                 result = rsa_encrypt(plain, e, n)
                 return {'plain' : plain, 'e' : e, 'n' : n, 'cipher' : result}
 
@@ -176,8 +176,8 @@ def result():
                 return {'plain' : result, 'key' : key, 'cipher' : cipher}
 
             elif (algo_id == "8"): # RSA
-                d = form['d']
-                n = form['n']
+                d = int(form['d'])
+                n = int(form['n'])
                 result = rsa_decrypt(cipher, d, n)
                 return {'plain' : result, 'd' : d, 'n' : n, 'cipher' : cipher}
 
