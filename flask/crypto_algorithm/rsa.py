@@ -1,7 +1,7 @@
-from utils import *
+from .utils import *
 
 
-def create_keys(p, q, e):
+def create_keys_rsa(p, q, e):
     # P and Q must be prime numbers and must be big enough
 
     if (p * q - 1 <= 127127):
@@ -146,9 +146,9 @@ def rsa_decrypt(cipher_string, d, n):
 # n = keys['public'][1]
 # d = keys['private'][0]
 
-cipher_string = rsa_encrypt("TucilKriptoRSA", e, n)
-plain_res = rsa_decrypt(cipher_string, d, n)
+# cipher_string = rsa_encrypt("TucilKriptoRSA", e, n)
+# plain_res = rsa_decrypt(cipher_string, d, n)
 
-print(f"d : {d}")
-print(f"Cipher string : {cipher_string}")
-print(f"Plain result : {plain_res}")
+# print(f"d : {d}")
+# print(f"Cipher string : {cipher_string}")
+# print(f"Plain result : {plain_res}")

@@ -39,7 +39,7 @@ def generate_keys():
         q = int(form['q'])
         e = int(form['e'])
 
-        keys = rsa.create_keys(p, q, e)
+        keys = create_keys_rsa(p, q, e)
         return {'public_key' : keys['public'], 'private_key' : keys['private']}
 
     elif (form['algo_id'] == "9"): # Paillier
@@ -47,7 +47,7 @@ def generate_keys():
         q = int(form['q'])
         g = int(form['g'])
         
-        keys = paillier.create_keys(p, q, g)
+        keys = create_keys_paillier(p, q, g)
         return {'public_key' : keys['public'], 'private_key' : keys['private']}
     
 @app.route('/result',methods = ['POST', 'GET'])
