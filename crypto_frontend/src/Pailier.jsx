@@ -61,11 +61,10 @@ const Elgamal = () => {
     
     data = {
       "data": {
-        "algo_id": "10",
+        "algo_id": "9",
         "p": document.getElementById("p").value,
         "g": document.getElementById("g").value,
-        "x": document.getElementById("x").value,
-        "k": document.getElementById("k").value,
+        "q": document.getElementById("q").value,
       }
     }
     
@@ -88,31 +87,24 @@ const Elgamal = () => {
     data = {
       "data": {
         "action": "encrypt",
-        "algorithm": "10",
+        "algorithm": "9",
         //TODO: Ini harusnya diganti sama public key nya
-        "p": document.getElementById("p").value,
         "g": document.getElementById("g").value,
-        "x": document.getElementById("x").value,
-        "k": document.getElementById("k").value,
+        "p": document.getElementById("p").value, 
+        "q": document.getElementById("q").value,
         "text": document.getElementById("plaintext").value
       }
     }
     
+    console.log(data);
+    
     axios.post(`http://127.0.0.1:5000/result`, data)
         .then(res => {
           const result = res.data;
-          // setResultText(result);
-          console.log("Result");
+          setResultText(result.cipher);
+          console.log("Result Ciphertext");
           console.log(result);
-          
-          const normalizedResult1 = result.result.map(value =>
-            value.join(","));
-          console.log(normalizedResult1);
-           
-          const normalizedResult2 = normalizedResult1.join(" ");
-          console.log(normalizedResult2);
-          console.log(typeof normalizedResult2);
-          setResultText(normalizedResult2);
+
         })
   }
   
@@ -123,12 +115,12 @@ const Elgamal = () => {
     data = {
       "data": {
         "action": "decrypt",
-        "algorithm": "10",
+        "algorithm": "9",
         //TODO: Ini harusnya diganti sama private key nya
-        "p": document.getElementById("p").value,
-        "g": document.getElementById("g").value,
-        "x": document.getElementById("x").value,
-        "k": document.getElementById("k").value,
+        "p": document.getElementById("p").value, 
+        "q": document.getElementById("q").value,
+        "lambda": document.getElementById("lambda").value,
+        "u": document.getElementById("u").value,
         "text": document.getElementById("ciphertext").value
       }
     }
@@ -138,7 +130,7 @@ const Elgamal = () => {
       const result = res.data;
       console.log("Plainteks: ");
       console.log(result);
-      setResultText(result.result);
+
     })
   }
   
@@ -158,6 +150,15 @@ const Elgamal = () => {
           <Box p={1} flexGrow={1}>
             <TextField 
               required 
+              id="q"
+              label="Q" 
+              multiline
+              focused
+            />
+          </Box>
+          <Box p={1} flexGrow={1}>
+            <TextField 
+              required 
               id="g"
               label="G" 
               multiline
@@ -167,8 +168,8 @@ const Elgamal = () => {
           <Box p={1} flexGrow={1}>
             <TextField 
               required 
-              id="x"
-              label="X" 
+              id="lambda"
+              label="Lambda" 
               multiline
               focused
             />
@@ -176,8 +177,8 @@ const Elgamal = () => {
           <Box p={1} flexGrow={1}>
             <TextField 
               required 
-              id="k"
-              label="K" 
+              id="u"
+              label="U" 
               multiline
               focused
             />

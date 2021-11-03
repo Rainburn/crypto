@@ -44,6 +44,8 @@ def create_keys(p, q, g):
         "public": (g, n),
         "private": (lambd, u)
     }
+    
+    print(keys)
 
     return keys
 
@@ -132,8 +134,8 @@ print(keys)
 
 # Private Keys
 
-lamb = keys['private'][0]
-u = keys['private'][1]
+# lamb = keys['private'][0]
+# u = keys['private'][1]
 
 plain = "RafiA"
 c = paillier_encrypt(plain, 5652, n)

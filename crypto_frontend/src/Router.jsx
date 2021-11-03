@@ -5,6 +5,7 @@ import Tugas1 from './Tugas1';
 import Steganography from './Steganography';
 import ECC from './ECC';
 import Elgamal from './Elgamal';
+import Pailier from './Pailier';
 
 const Router= () => {
   return <BrowserRouter>
@@ -13,6 +14,7 @@ const Router= () => {
       <Route path="/steganography" component={Steganography}/>
       <Route path="/ecc" component={ECC}/>
       <Route path="/elgamal" component={Elgamal}/>
+      <Route path="/pailier" component={Pailier} />
     </Switch>
   </BrowserRouter>
 }
