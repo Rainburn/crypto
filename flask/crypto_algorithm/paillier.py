@@ -1,4 +1,4 @@
-from utils import *
+from .utils import *
 import random
 
 def l_function(x, n):
