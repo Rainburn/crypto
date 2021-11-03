@@ -23,14 +23,7 @@ def generate_keys():
     payload = request.json
     form = payload['data']
     
-    if(form["algo_id"] == "9"):
-        p = int(form["p"])
-        q = int(form["q"])
-        g = int(form["g"])
-        
-        return create_keys(p, q, g)
-        
-    elif(form["algo_id"] == "10"): # Elgamal
+    if(form["algo_id"] == "10"): # Elgamal
         g = int(form["g"])
         p = int(form["p"])
         x = int(form["x"])
