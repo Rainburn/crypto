@@ -1,27 +1,11 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {
   Button, 
-  AppBar, 
-  Toolbar, 
   IconButton, 
   Typography, 
   TextField,
   Container,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
   Box,
-  Switch,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Drawer,
-  Divider,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
 } from '@material-ui/core';
 import styles from './App.module.css';
 import axios from "axios";
@@ -29,59 +13,29 @@ import FileCopyIcon from '@material-ui/icons/FileCopy';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import Layout from './Layout';
 
-const Tugas1 = () => {
-  const [method, setMethod] = useState('1');
-  const [crypt, setCrypt] = useState('Encrypt');
-  const [is5, setis5] = useState(false);
+const Elgamal = () => {
   const [requestText, setRequestText] = useState('');
-  const [keyText, setKeyText] = useState('')
   const [resultText, setResultText] = useState('');
-  const [mkeyText,setMKeyText] = useState(0);
-  const [isShowMKey, setIsShowMKey] = useState(false);
   const [table,setTable] = useState();
-  const [isShowDecrypt, setIsShowDecrypt] = useState(false);
+  const [publicKey, setPublicKey] = useState([]);
+  const [privateKey, setPrivateKey] = useState([]);
   
   const copyToClipboard = (text) => {
     const el = document.createElement('textarea');
-    el.value = text.replace(/ /g,'');
+    el.value = text.replace(/ /g,' ');
     document.body.appendChild(el);
     el.select();
     document.execCommand('copy');
     document.body.removeChild(el);
   }
   
-  const downloadCsv = (rows) => {
-    let csvContent = "data:text/csv;charset=utf-8," 
-    + rows.map(e => e.join(",")).join("\n");
-    
-    var encodedUri = encodeURI(csvContent);
-    var link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "my_data.csv");
-    document.body.appendChild(link); // Required for FF
-
-    link.click();
-  }
-  
-  const readCsvFile = (e) => {
-    e.preventDefault()
-    let csvStr;
-    const reader = new FileReader()
-    reader.onload = async (e) => { 
-      const text = (e.target.result)
-      csvStr = text;
-      
-      const array = []
-      csvStr.split("\n").forEach((value)=>{
-        const arr = value.split(",");
-        array.push(arr)
-      })
-      
-      setTable(array);
-    };
-    reader.readAsText(e.target.files[0])
-    
-    
+  const downloadTxtFile = () => {
+    const element = document.createElement("a");
+    const file = new Blob([resultText], {type: 'text/plain'});
+    element.href = URL.createObjectURL(file);
+    element.download = "cryptography.txt";
+    document.body.appendChild(element); // Required for this to work in FireFox
+    element.click();
   }
   
   const readTxtFile = async (e) => {
@@ -97,226 +51,179 @@ const Tugas1 = () => {
     reader.readAsText(e.target.files[0])
   }
   
-  const downloadTxtFile = () => {
-    const element = document.createElement("a");
-    const file = new Blob([resultText], {type: 'text/plain'});
-    element.href = URL.createObjectURL(file);
-    element.download = "cryptography.txt";
-    document.body.appendChild(element); // Required for this to work in FireFox
-    element.click();
-  }
   
-  const trimAlphabetic = (text) => {
-    return text.replace(/[^A-Za-z]/g, '');
-  }
-  
-  const handleSubmit = (event) => {
+  const handleSubmitKey = (event) => {
     event.preventDefault();
+    console.log("hit submit key");
     
     let data;
-    let text = document.getElementById("plain/ciphertext").value;
     
-    if (method == '7') { // Method is RC4
-      data = {
-        "data": {
-          "action" : crypt.toLowerCase(),
-          "algorithm": method,
-          "text": text,
-          "key": document.getElementById("key").value
-        }
-      };
-      
-      if(isShowDecrypt){
-        data = {
-          "data": {
-            "action" : crypt.toLowerCase(),
-            "algorithm": method,
-            "text": text,
-            "key": document.getElementById("key").value,
-            "table": table,
-          }
-        };
-      }
-      
-      if(isShowMKey){
-        data = {
-          "data": {
-            "action" : crypt.toLowerCase(),
-            "algorithm": method,
-            "text": document.getElementById("plain/ciphertext").value,
-            "m": mkeyText,
-            "b": Number.parseInt(document.getElementById("key").value),
-          }
-        };
-      }
-      
-      axios.post(`http://127.0.0.1:5000/result`, data)
-        .then(res => {
-          const result = crypt.toLowerCase() === 'encrypt' ? res.data.cipher: res.data.plain;
-          var resultText = "";
-          var resLength = result.length
-
-          var i = 0;
-          while (i < resLength) {
-            resultText += String.fromCharCode(result[i]);
-            i++;
-          }
-          setResultText(resultText)
-          
-          if(res.data.table!=undefined){
-            downloadCsv(res.data.table);
-          }
-        })
-        
-        return
-    
-      }
-    
-
-    // If method chosen is Vigenere Base 26 or Playfair
-    if(method!='4' && method!='5'){
-      text = trimAlphabetic(text);
-    }
     
     data = {
       "data": {
-        "action" : crypt.toLowerCase(),
-        "algorithm": method,
-        "text": text,
-        "key": document.getElementById("key").value
+        "algo_id": "11",
+        "a": document.getElementById("a").value,
+        "b": document.getElementById("b").value,
+        "p": document.getElementById("p").value,
       }
-    };
-    
-    if(isShowDecrypt){
-      data = {
-        "data": {
-          "action" : crypt.toLowerCase(),
-          "algorithm": method,
-          "text": text,
-          "key": document.getElementById("key").value,
-          "table": table,
-        }
-      };
     }
     
-    if(isShowMKey){
-      data = {
-        "data": {
-          "action" : crypt.toLowerCase(),
-          "algorithm": method,
-          "text": document.getElementById("plain/ciphertext").value,
-          "m": mkeyText,
-          "b": Number.parseInt(document.getElementById("key").value),
-        }
-      };
+    axios.post(`http://127.0.0.1:5000/generate-keys`, data)
+        .then(res => {
+          const result = res.data;
+          const public_key = result.public_key;
+          const private_key = result.private_key;
+          
+          setPublicKey(public_key);
+          setPrivateKey(private_key);
+          console.log(result);
+        })
+      
+  }
+  
+  const handleSubmitEncrypt = (event) => {
+    event.preventDefault();
+    let data;
+    
+    data = {
+      "data": {
+        "action": "encrypt",
+        "algorithm": "11",
+        "a": document.getElementById("a").value,
+        "b": document.getElementById("b").value,
+        "p": document.getElementById("p").value,
+        "k": document.getElementById("k").value,
+        "text": document.getElementById("plaintext").value
+      }
     }
     
     axios.post(`http://127.0.0.1:5000/result`, data)
-      .then(res => {
-        const result = crypt.toLowerCase() === 'encrypt' ? res.data.cipher: res.data.plain;
-        setResultText(result.toUpperCase())
-        
-        if(res.data.table!==undefined){
-          downloadCsv(res.data.table);
-        }
-      })
+        .then(res => {
+          const result = res.data;
+          // setResultText(result);
+          console.log("Result");
+          console.log(result);
+          
+          const normalizedResult1 = result.result.map(value =>
+            value.join(","));
+          console.log(normalizedResult1);
+           
+          const normalizedResult2 = normalizedResult1.join(" ");
+          console.log(normalizedResult2);
+          console.log(typeof normalizedResult2);
+          setResultText(normalizedResult2);
+        })
   }
   
-  useEffect(()=>{
-    if(crypt.toLowerCase()==='decrypt' && method==='2'){
-      setIsShowDecrypt(true);
+  const handleSubmitDecrypt = (event) => {
+    event.preventDefault();
+    let data;
+    
+    data = {
+      "data": {
+        "action": "decrypt",
+        "algorithm": "11",
+        "a": document.getElementById("a").value,
+        "b": document.getElementById("b").value,
+        "p": document.getElementById("p").value,
+        "k": document.getElementById("k").value,
+        "text": document.getElementById("ciphertext").value
+      }
     }
-    else{
-      setIsShowDecrypt(false);
-    }
-  }, [crypt,method])
-  
-  const onSwitchChange = (event) => {
-    setis5(!is5);
-    if(resultText==null){
-      return;
-    }
-    let a = resultText;
-    a =  is5 ? a.replace(/ /g,'') : a.split(/(.{5})/).filter(O=>O).join(" ");
-    setResultText(a);
+    
+    axios.post(`http://127.0.0.1:5000/result`, data)
+    .then(res => {
+      const result = res.data;
+      console.log("Plainteks: ");
+      console.log(result);
+      setResultText(result.result);
+    })
   }
   
-  const onMethodChange = (event) => {
-    setMethod(event.target.value);
-    const changeShowMKey = event.target.value == '6' ? true : false;
-    setIsShowMKey(changeShowMKey);
-  }
   return <Layout><div className={styles.container}>
   <Container  maxWidth="md">
-    <form noValidate autoComplete="off" onSubmit={handleSubmit}>
+    <form noValidate autoComplete="off" onSubmit={handleSubmitKey}>      
       <Box display="flex" flexDirection="row" >
           <Box p={1} flexGrow={1}>
             <TextField 
               required 
-              id="plain/ciphertext"
-              label="Plain/Cipher Text" 
+              id="a"
+              label="A" 
+              multiline
+              focused
+            />
+          </Box>
+          <Box p={1} flexGrow={1}>
+            <TextField 
+              required 
+              id="b"
+              label="B" 
+              multiline
+              focused
+            />
+          </Box>
+          <Box p={1} flexGrow={1}>
+            <TextField 
+              required 
+              id="p"
+              label="p" 
+              multiline
+              focused
+            />
+          </Box>
+          <Box p={1} flexGrow={1}>
+            <TextField 
+              required 
+              id="k"
+              label="K" 
+              multiline
+              focused
+            />
+          </Box>
+          <Box p={1} flexGrow={1}>
+            <Button type="submit" className={styles.button}>Generate Key</Button>
+          </Box>
+      </Box>
+      </form>
+      <form noValidate autoComplete="off" onSubmit={handleSubmitEncrypt}>    
+      <Box display="flex" flexDirection="row" >
+          <Box p={1} flexGrow={1}>
+            <TextField 
+              required 
+              id="plaintext"
+              label="Plain Text" 
               multiline
               fullWidth 
               focused
             />
+            <Button type="submit" className={styles.button}>Encrypt</Button>
           </Box>
           <Box p={1}>
             <IconButton aria-label="download" onClick={() => copyToClipboard(requestText)}>
               <FileCopyIcon />
             </IconButton>
           </Box>
-      </Box>
-      
-      <label class={styles.upload}>
-      <input class={styles.button} type="file" onChange={(e) => readTxtFile(e)} />
-      Upload File
-      </label>
-      
+      </Box>     
+      </form>
         
-      
-      {isShowMKey && (
-        <div>
-        <FormControl className={styles.full}>
-          <InputLabel id="m-key-label">M Key</InputLabel>
-            <Select
-              labelId="m-key-label"
-              id="m-key-select-lable"
-              value={mkeyText}
-              autoWidth
-              onChange={(event) => setMKeyText(event.target.value)}
-            >
-              <MenuItem value={1}>1</MenuItem>
-              <MenuItem value={3}>3</MenuItem>
-              <MenuItem value={5}>5</MenuItem>
-              <MenuItem value={7}>7</MenuItem>
-              <MenuItem value={9}>9</MenuItem>
-              <MenuItem value={11}>11</MenuItem>
-              <MenuItem value={15}>15</MenuItem>
-              <MenuItem value={17}>17</MenuItem>
-              <MenuItem value={19}>19</MenuItem>
-              <MenuItem value={21}>21</MenuItem>
-              <MenuItem value={23}>23</MenuItem>
-              <MenuItem value={25}>25</MenuItem>
-            </Select>
-          </FormControl>
-        </div>) }
-        
+    
+      <form noValidate autoComplete="off" onSubmit={handleSubmitDecrypt}>    
       <TextField 
         required 
-        id="key" 
-        type={isShowMKey ? 'number' : 'string'}
-        label={isShowMKey ? 'B Key' : 'Key'}
+        id="ciphertext"
+        label="Cipher Text" 
+        multiline
         fullWidth 
-        multiline 
         focused
       />
       
-      {isShowDecrypt && (
       <label class={styles.upload}>
-      <input class={styles.button} type="file" onChange={(e) => readCsvFile(e)} />
-        Upload Csv File
+      <input class={styles.button} type="file" onChange={(e) => readTxtFile(e)} />
+        Upload Key File
       </label>
-      )}
+      
+      <Button type="submit" className={styles.button}>Decrypt</Button>
+      </form>
 
       
       {resultText !=='' && (
@@ -328,15 +235,6 @@ const Tugas1 = () => {
             <Typography id="result" variant="h5" gutterBottom gutterTop>
                 {resultText}
             </Typography>
-            <FormControlLabel
-        control={<Switch
-          checked={is5}
-          onChange={onSwitchChange}
-          name="is5"
-          color="primary"
-        />}
-        label="5 chunks"
-      />
           </Box>
           <Box p={1}>
             <IconButton aria-label="download" onClick={downloadTxtFile}>
@@ -348,39 +246,10 @@ const Tugas1 = () => {
           </Box>
       </Box>
       )}
-      
-        <Box display="flex" flexDirection="row" p={2} m={4} bgcolor="background.paper">
-          <Box p={1} flexGrow={1}>
-            <Typography variant="h5" gutterBottom gutterTop>
-              Cipher Method
-            </Typography>
-            <RadioGroup aria-label="method" name="Method" value={method} onChange={onMethodChange}>
-              <FormControlLabel value="1" control={<Radio />} label="Vigenere Standard" />
-              <FormControlLabel value="2" control={<Radio />} label="Full Vigenere" />
-              <FormControlLabel value="3" control={<Radio />} label="Auto Key Vigenere" />
-              <FormControlLabel value="4" control={<Radio />} label="Extended Vigenere" />
-              <FormControlLabel value="5" control={<Radio />} label="Playfair" />
-              <FormControlLabel value="6" control={<Radio />} label="Affine" />
-              <FormControlLabel value="7" control={<Radio />} label="RC4" />
-            </RadioGroup>
-          </Box>
-          <Box p={1} flexGrow={1}>
-            <Typography variant="h5" gutterBottom gutterTop>
-              Encrypt/Decrypt
-            </Typography>
-            <RadioGroup aria-label="crypt" name="Cryption" value={crypt} onChange={(event)=>  setCrypt(event.target.value)}>
-              <FormControlLabel value="Encrypt" control={<Radio />} label="Encrypt" />
-              <FormControlLabel value="Decrypt" control={<Radio />} label="Decrypt" />
-            </RadioGroup>
-            <Button type="submit" className={styles.button}>{crypt}</Button>
-          </Box>
-          
-        </Box>
-    </form>
   </Container>
   
 </div>
 </Layout>
 }
 
-export default Tugas1;
+export default Elgamal;

@@ -131,7 +131,7 @@ class ECC:
         break;
     
     if(P.x == 0 and P.y == 0):
-      return 'No Points Found!'
+      return ;
     
     points = [P]
     count = 1
@@ -172,11 +172,11 @@ class ECC:
     }
 
     for c in plaintext:
-      kB = self.generate_public_keys(k,P)
-      kP = self.generate_private_keys(k, pb)
+      # kB = self.generate_public_keys(k,P)
+      # kP = self.generate_private_keys(k, pb)
       
-      # kB = multiple(k, P, self.p, self.a)
-      # kP = multiple(k, pb, self.p, self.a)
+      kB = multiple(k, P, self.p, self.a)
+      kP = multiple(k, pb, self.p, self.a)
       
       Pm = (0,0)
       for point, encoded_char in encoded.items():
@@ -192,11 +192,13 @@ class ECC:
     return enc
               
   def decrypt(self, ciphertext, b):
-    # cipher = ciphertext.split(' ')
-    # cipher_encoded = []
-    # for c in cipher:
-    #   a = list(map(int, cip.split(',')))
-    #   cipher_encoded.append(((a[0],a[1]), (a[2], a[3])))
+    
+    if(isinstance(ciphertext, str)):
+      cipher = ciphertext.split(' ')
+      ciphertext = []
+      for c in cipher:
+        a = list(map(int, c.split(',')))
+        ciphertext.append(((a[0],a[1]), (a[2], a[3])))
     
     decoded = self.encoded()
     
@@ -208,19 +210,30 @@ class ECC:
       plaintext += decoded[(d.x,d.y)]
       
     return plaintext
-    
-a = ECC(-1, 188, 751)
-points = a.get_points()
-list_points = list(points.values())
-print(list_points[0][0].x, list_points[0][0].y)
-public = a.generate_public_keys(-1, Point(0,375))
-private = a.generate_private_keys(188, Point(0,375))
 
-print(public.x, public.y)
-print()
-print(private.x, public.y)
-enc = a.encrypt("inka", 2, Point(0,375), Point(0,375))
+a = -1
+b = 188
+p = 751
+k = 10
+
+ecc = ECC(a, b, p)
+points = ecc.get_points()
+list_points = list(points.values())
+B = list_points[0][0]
+print(list_points[0][0].x, list_points[0][0].y)
+public_a = ecc.generate_public_keys(a, B)
+public_b = ecc.generate_public_keys(b, B)
+private_a = ecc.generate_private_keys(a, public_b)
+private_b = ecc.generate_private_keys(b, public_a)
+
+print("private a: ", private_a.x, private_a.y)
+print("private b: ", private_b.x, private_b.y)
+
+# print(public.x, public.y)
+# print()
+# print(private.x, public.y)
+enc = ecc.encrypt("rafi", k, B , public_b)
 print("enc", enc)
 
-dec = a.decrypt(enc["encoding"], 188)
+dec = ecc.decrypt(enc["encoding"], b)
 print("dec", dec)

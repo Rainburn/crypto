@@ -8,6 +8,7 @@ from crypto_algorithm.rc4 import *
 from crypto_algorithm.rsa import *
 from crypto_algorithm.paillier import *
 from crypto_algorithm.elgamal import *
+from crypto_algorithm.ecc import *
 
 app = Flask(__name__)
 
@@ -49,6 +50,24 @@ def generate_keys():
         
         keys = create_keys_paillier(p, q, g)
         return {'public_key' : keys['public'], 'private_key' : keys['private']}
+        
+    elif (form["algo_id"]=="11"): # ECC
+        a = int(form["a"])
+        b = int(form["b"])
+        p = int(form["p"])
+        
+        ecc = ECC(a, b, p)
+        points = ecc.get_points()
+        list_points = list(points.values())
+        B = list_points[0][0]
+        keys = ecc.generate_public_keys(a, B)
+        public_a = ecc.generate_public_keys(a, B)
+        public_b = ecc.generate_public_keys(b, B)
+        private_a = ecc.generate_private_keys(a, public_b)
+        
+        return {'public_key' : [public_a.x, public_a.y], 'private_key' : [private_a.x, private_a.y]}
+        
+        
     
 @app.route('/result',methods = ['POST', 'GET'])
 def result():
@@ -132,6 +151,25 @@ def result():
                 keys = elgamal.generate_public_keys()
                 result = elgamal.encrypt(plaintext, keys)
                 return {'result': result} 
+            
+            elif (algo_id == "11") : # ECC
+                a = int(form["a"])
+                b = int(form["b"])
+                p = int(form["p"])
+                k = int(form["k"])
+                plaintext = form["text"]
+                
+                ecc = ECC(a, b, p)
+                points = ecc.get_points()
+                list_points = list(points.values())
+                B = list_points[0][0]
+                keys = ecc.generate_public_keys(a, B)
+                public_a = ecc.generate_public_keys(a, B)
+                public_b = ecc.generate_public_keys(b, B)
+                private_a = ecc.generate_private_keys(a, public_b)
+                
+                enc = ecc.encrypt(plaintext, k, B , public_b)
+                return {'result': enc["encoding"]}
 
 
         else : # action is decrypt
@@ -201,6 +239,19 @@ def result():
                 keys = elgamal.generate_private_keys()
                 result = elgamal.decrypt(plaintext, keys)
                 return {'result': result}
+            
+            elif (algo_id == "11") : # ECC
+                a = int(form["a"])
+                b = int(form["b"])
+                p = int(form["p"])
+                plaintext = form["text"]
+                
+                ecc = ECC(a, b, p)
+                points = ecc.get_points()
+                list_points = list(points.values())
+                
+                dec = ecc.decrypt(plaintext, b)
+                return {'result': dec}
 
         
     else :
