@@ -1,4 +1,4 @@
-from .utils import *
+from utils import *
 
 
 def create_keys(p, q, e):
@@ -146,5 +146,9 @@ e = keys['public'][0]
 n = keys['public'][1]
 d = keys['private'][0]
 
-cipher_string = rsa_encrypt("HELLORAISSA  2211 Princess", e, n)
-rsa_decrypt(cipher_string, d, n)
+cipher_string = rsa_encrypt("TucilKriptoRSA", e, n)
+plain_res = rsa_decrypt(cipher_string, d, n)
+
+print(f"d : {d}")
+print(f"Cipher string : {cipher_string}")
+print(f"Plain result : {plain_res}")

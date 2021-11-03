@@ -1,4 +1,4 @@
-from .utils import *
+from utils import *
 import random
 
 def l_function(x, n):
@@ -135,7 +135,8 @@ print(keys)
 lamb = keys['private'][0]
 u = keys['private'][1]
 
-plain = "R4f 1"
+plain = "RafiA"
 c = paillier_encrypt(plain, 5652, n)
 m = paillier_decrypt(c, n, lamb, u)
-print(f"m : {m}")
+print(f"Cipher : {c}")
+print(f"Plain res : {m}")
