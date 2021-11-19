@@ -131,3 +131,36 @@ def is_prime(n):
             return False
     
     return True
+
+
+def right_rotate(bin, n):
+
+    len_bin = len(bin)
+
+    curr_result = bin
+    for i in range(n):
+        last_char = curr_result[len_bin-1]
+        curr_result = curr_result[0:len_bin-1]
+        curr_result = last_char + curr_result
+
+    return curr_result
+
+def right_shift(bin, n):
+    len_bin = len(bin)
+
+    curr_result = bin
+    for i in range(n):
+        curr_result = curr_result[0:len_bin-1]
+        curr_result = "0" + curr_result
+
+    return curr_result
+
+def not_binary(bin):
+    res = ""
+    for i in range(len(bin)):
+        if (bin[i] == "1"):
+            res += "0"
+        else :
+            res += "1"
+
+    return res
