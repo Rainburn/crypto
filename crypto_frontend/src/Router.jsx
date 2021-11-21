@@ -6,6 +6,7 @@ import ECC from './ECC';
 import Elgamal from './Elgamal';
 import Pailier from './Pailier';
 import RSA from './RSA';
+import Tugas5 from './Tugas5';
 
 const Router= () => {
   return <BrowserRouter>
@@ -16,6 +17,7 @@ const Router= () => {
       <Route path="/elgamal" component={Elgamal}/>
       <Route path="/pailier" component={Pailier} />
       <Route path="/rsa" component={RSA} />
+      <Route path="/tugas5" component={Tugas5} />
     </Switch>
   </BrowserRouter>
 }

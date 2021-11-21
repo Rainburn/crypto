@@ -45,6 +45,9 @@ function App() {
           <Button component={Link} to="/ecc">
               ECC
           </Button>
+          <Button component={Link} to="/tugas5">
+              Tugas 5
+          </Button>
           
         </Toolbar>
       </AppBar>
