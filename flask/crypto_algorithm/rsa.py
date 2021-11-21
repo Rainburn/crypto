@@ -1,4 +1,5 @@
-from .utils import *
+from utils import *
+import math
 
 
 def create_keys_rsa(p, q, e):
@@ -18,7 +19,7 @@ def create_keys_rsa(p, q, e):
 
     # Pick e, e must be prime relative to q_n
     # Validate e here
-    if (gcd(e, q_n) != 1):
+    if (math.gcd(e, q_n) != 1):
         print("e must be prime relative to q_n")
         return
 
