@@ -27,6 +27,7 @@ def set_digital_signature(filename, e, n, output_filename="output"):
     print(f"SHA256 : {hash_res}")
 
     encrypted_hash = rsa_encrypt(hash_res, e, n)
+    # encrypted_hash = hash_res
 
     # decrypted_hash = rsa_decrypt(encrypted_hash, d, n)
 
@@ -54,7 +55,7 @@ def verify_digital_signature(filename, d, n):
     print("VERIFYING DIGITAL SIGNATURE")
     print("Downloading file from firebase")
     
-    download_from_firebase("tubes5/verifying/test_inka_output_2.txt", "verify.txt")
+    download_from_firebase("tubes5/verifying/" + filename, "verify.txt")
     
     filename="verify.txt"
     f = open(filename, "r")
@@ -109,10 +110,16 @@ def verify_digital_signature(filename, d, n):
 
     # Verify File Here
     hash_res = sha256(original_content, os.stat(filename).st_size - residual_size)
+    print("Hash res adalah: ")
+    print(hash_res)
 
     # Decrypt Digital Signature
     encrypted_hash = ds[4:len(ds)-5]
     decrypted_hash = rsa_decrypt(encrypted_hash, d, n)
+    print(encrypt_message)
+    print(decrypted_hash)
+    
+    
 
     # print("Total Lines :", len(lines))
     # print(original_content)
