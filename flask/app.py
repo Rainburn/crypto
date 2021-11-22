@@ -9,6 +9,7 @@ from crypto_algorithm.rsa import *
 from crypto_algorithm.paillier import *
 from crypto_algorithm.elgamal import *
 from crypto_algorithm.ecc import *
+from crypto_algorithm.digital_signature import *
 
 app = Flask(__name__)
 
@@ -18,6 +19,29 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 @app.route('/')
 def student():
    return render_template('index.html')
+   
+@app.route('/sha',methods = ['POST', 'GET'])
+def sha():
+    payload = request.json
+    form = payload['data']
+    
+    if(form["method"] == "signing"): # Signing
+        d = int(form["d"])
+        n = int(form["n"])
+        filename = form["filename"]
+        output_filename = form["output_filename"]
+        
+        result = set_digital_signature(filename, d, n, output_filename)
+        
+        return {'success': result}
+
+    elif (form['method'] == "verifying"): # Verifying
+        e = int(form['e'])
+        n = int(form['n'])
+        filename = form['filename']
+        
+        result = verify_digital_signature(filename, e, n)
+        return {'result' : result}
                 
 @app.route('/generate-keys',methods = ['POST', 'GET'])
 def generate_keys():
