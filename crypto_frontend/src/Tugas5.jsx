@@ -1,19 +1,11 @@
-import React, {useEffect, useState} from "react";
+import React, {useState, useEffect} from "react";
 import {
   Button, 
   IconButton, 
   Typography, 
   TextField,
   Container,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
   Box,
-  Switch,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
   AppBar,
   Tabs, 
   Tab,
@@ -23,6 +15,7 @@ import axios from "axios";
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import Layout from './Layout';
+import storage from "./firebase";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -45,23 +38,68 @@ function TabPanel(props) {
 }
 
 const Tugas5 = () => {
-  const [method, setMethod] = useState('1');
-  const [crypt, setCrypt] = useState('Encrypt');
-  const [is5, setis5] = useState(false);
-  const [requestText, setRequestText] = useState('');
-  const [keyText, setKeyText] = useState('')
-  const [resultText, setResultText] = useState('');
-  const [mkeyText,setMKeyText] = useState(0);
-  const [isShowMKey, setIsShowMKey] = useState(false);
-  const [table,setTable] = useState();
-  const [isShowDecrypt, setIsShowDecrypt] = useState(false);
   const [value, setValue] = React.useState(0);
-  const [publicKey, setPublicKey] = useState('public');
-  const [privateKey, setPrivateKey] = useState('private');
+  const [publicKey, setPublicKey] = useState('');
+  const [privateKey, setPrivateKey] = useState('');
+  const [n, setN] = useState('');
+  const [file, setFile] = useState();
+  const [outputFileName, setOutputFileName] = useState("output.txt");
+  const [status, setStatus] = useState();
+  const [verifyResult, setVerifyResult] = useState();
   
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+  
+  const uploadSigning = ()=>{
+    if(file == null) {
+      alert("Something wrong with uploading file");
+      return;
+    }
+      
+    storage.ref(`/tubes5/signing/input/${file.name}`).put(file)
+    .on("state_changed" , alert("File succesfully uploaded") , alert);
+  }
+  
+  const uploadVerifying = ()=>{
+    if(file == null) {
+      alert("Something wrong with uploading file");
+      return;
+    }
+      
+    storage.ref(`/tubes5/verifying/${file.name}`).put(file)
+    .on("state_changed" , alert("File succesfully uploaded") , alert);
+  }
+  
+  const download = (filename) => {
+    storage.ref(`/tubes5/signing/output/${filename}`).getDownloadURL().then((url) => {
+      console.log("url");
+      console.log(url);
+      
+      const xhr = new XMLHttpRequest();
+      xhr.responseType = 'blob';
+      xhr.onload = (event) => {
+        var a = document.createElement('a');
+        a.href = window.URL.createObjectURL(xhr.response);
+        a.download = outputFileName;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();                            //Simulates a click event
+      };
+      xhr.open('GET', url);
+      xhr.send();
+      console.log("finish download");
+    })
+  }
+  
+  const getFilename = (path) => {
+    var startIndex = (path.indexOf('\\') >= 0 ? path.lastIndexOf('\\') : path.lastIndexOf('/'));
+    var filename = path.substring(startIndex);
+    if (filename.indexOf('\\') === 0 || filename.indexOf('/') === 0) {
+        filename = filename.substring(1);
+    }
+    return filename
+  }
 
   
   const copyToClipboard = (text) => {
@@ -73,211 +111,107 @@ const Tugas5 = () => {
     document.body.removeChild(el);
   }
   
-  const downloadCsv = (rows) => {
-    let csvContent = "data:text/csv;charset=utf-8," 
-    + rows.map(e => e.join(",")).join("\n");
-    
-    var encodedUri = encodeURI(csvContent);
-    var link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "my_data.csv");
-    document.body.appendChild(link); // Required for FF
-
-    link.click();
-  }
-  
-  const readCsvFile = (e) => {
-    e.preventDefault()
-    let csvStr;
-    const reader = new FileReader()
-    reader.onload = async (e) => { 
-      const text = (e.target.result)
-      csvStr = text;
-      
-      const array = []
-      csvStr.split("\n").forEach((value)=>{
-        const arr = value.split(",");
-        array.push(arr)
-      })
-      
-      setTable(array);
-    };
-    reader.readAsText(e.target.files[0])
-    
-    
-  }
-  
-  const readTxtFile = async (e) => {
-    e.preventDefault()
-    const reader = new FileReader()
-    reader.onload = async (e) => { 
-      const text = (e.target.result)
-      var s = document.getElementById("plain/ciphertext");
-      s.value = text;
-      setRequestText(text);
-
-    };
-    reader.readAsText(e.target.files[0])
-  }
-  
-  const downloadTxtFile = () => {
+  const downloadTxtFile = (text) => {
     const element = document.createElement("a");
-    const file = new Blob([resultText], {type: 'text/plain'});
+    const file = new Blob([text], {type: 'text/plain'});
     element.href = URL.createObjectURL(file);
     element.download = "key.txt";
     document.body.appendChild(element); // Required for this to work in FireFox
     element.click();
   }
   
-  const trimAlphabetic = (text) => {
-    return text.replace(/[^A-Za-z]/g, '');
-  }
-  
   const handleSubmitGenerate = (event) => {
     event.preventDefault();
+    console.log("hit submit key");
     
     let data;
-    let text = document.getElementById("plain/ciphertext").value;
     
-    if (method == '7') { // Method is RC4
-      data = {
-        "data": {
-          "action" : crypt.toLowerCase(),
-          "algorithm": method,
-          "text": text,
-          "key": document.getElementById("key").value
-        }
-      };
-      
-      if(isShowDecrypt){
-        data = {
-          "data": {
-            "action" : crypt.toLowerCase(),
-            "algorithm": method,
-            "text": text,
-            "key": document.getElementById("key").value,
-            "table": table,
-          }
-        };
-      }
-      
-      if(isShowMKey){
-        data = {
-          "data": {
-            "action" : crypt.toLowerCase(),
-            "algorithm": method,
-            "text": document.getElementById("plain/ciphertext").value,
-            "m": mkeyText,
-            "b": Number.parseInt(document.getElementById("key").value),
-          }
-        };
-      }
-      
-      axios.post(`http://127.0.0.1:5000/result`, data)
-        .then(res => {
-          const result = crypt.toLowerCase() === 'encrypt' ? res.data.cipher: res.data.plain;
-          var resultText = "";
-          var resLength = result.length
-
-          var i = 0;
-          while (i < resLength) {
-            resultText += String.fromCharCode(result[i]);
-            i++;
-          }
-          setResultText(resultText)
-          
-          if(res.data.table!=undefined){
-            downloadCsv(res.data.table);
-          }
-        })
-        
-        return
-    
-      }
-    
-
-    // If method chosen is Vigenere Base 26 or Playfair
-    if(method!='4' && method!='5'){
-      text = trimAlphabetic(text);
-    }
     
     data = {
       "data": {
-        "action" : crypt.toLowerCase(),
-        "algorithm": method,
-        "text": text,
-        "key": document.getElementById("key").value
+        "algo_id": "8",
+        "p": document.getElementById("p").value,
+        "q": document.getElementById("q").value,
+        "e": document.getElementById("e").value,
       }
-    };
-    
-    if(isShowDecrypt){
-      data = {
-        "data": {
-          "action" : crypt.toLowerCase(),
-          "algorithm": method,
-          "text": text,
-          "key": document.getElementById("key").value,
-          "table": table,
-        }
-      };
     }
     
-    if(isShowMKey){
-      data = {
-        "data": {
-          "action" : crypt.toLowerCase(),
-          "algorithm": method,
-          "text": document.getElementById("plain/ciphertext").value,
-          "m": mkeyText,
-          "b": Number.parseInt(document.getElementById("key").value),
-        }
-      };
-    }
-    
-    axios.post(`http://127.0.0.1:5000/result`, data)
-      .then(res => {
-        const result = crypt.toLowerCase() === 'encrypt' ? res.data.cipher: res.data.plain;
-        setResultText(result.toUpperCase())
-        
-        if(res.data.table!==undefined){
-          downloadCsv(res.data.table);
-        }
-      })
+    axios.post(`http://127.0.0.1:5000/generate-keys`, data)
+        .then(res => {
+          const result = res.data;
+          const public_key = result.public_key;
+          const private_key = result.private_key;
+          console.log(result);
+          setPublicKey(public_key[0]);
+          setPrivateKey(private_key[0]);
+          setN(private_key[1]);
+        })
   }
   
   
   const handleSubmitSigning = (event) => {
+    
     event.preventDefault();
+    uploadSigning();
+    
+    console.log("hit signing key");
+    setStatus("SIGNING. Please Wait");
+    
+    let data;
+    
+    
+    data = {
+      "data": {
+        "method": "signing",
+        "d": document.getElementById("d").value,
+        "n": document.getElementById("n").value,
+        "filename": getFilename(document.getElementById("upload-signing").value),
+        "output_filename": outputFileName,
+      }
+    }
+    
+    axios.post(`http://127.0.0.1:5000/sha`, data)
+        .then(res => {
+          const result = res.data;
+          console.log(result);
+          setStatus("COMPLETE");
+          
+        })
   }
+  
+  useEffect(()=> {
+    console.log("Halo");
+    console.log(verifyResult);
+  },[verifyResult])
   
   const handleSubmitVerifying = (event) => {
+    
     event.preventDefault();
+    uploadVerifying();
+    
+    console.log("hit signing key");
+    
+    let data;
+    
+    
+    data = {
+      "data": {
+        "method": "verifying",
+        "e": document.getElementById("e").value,
+        "n": document.getElementById("n").value,
+        "filename": getFilename(document.getElementById("upload-verifying").value),
+      }
+    }
+    
+    axios.post(`http://127.0.0.1:5000/sha`, data)
+        .then(res => {
+          const result = res.data;
+          console.log(result);
+          setVerifyResult(result.result.toString());
+        })
   }
   
-  useEffect(()=>{
-    if(crypt.toLowerCase()==='decrypt' && method==='2'){
-      setIsShowDecrypt(true);
-    }
-    else{
-      setIsShowDecrypt(false);
-    }
-  }, [crypt,method])
   
-  const onSwitchChange = (event) => {
-    setis5(!is5);
-    if(resultText==null){
-      return;
-    }
-    let a = resultText;
-    a =  is5 ? a.replace(/ /g,'') : a.split(/(.{5})/).filter(O=>O).join(" ");
-    setResultText(a);
-  }
-  
-  const onMethodChange = (event) => {
-    setMethod(event.target.value);
-    const changeShowMKey = event.target.value == '6' ? true : false;
-    setIsShowMKey(changeShowMKey);
-  }
   
   function a11yProps(index) {
     return {
@@ -297,14 +231,45 @@ const Tugas5 = () => {
       </AppBar>
       <TabPanel value={value} index={0}>
         <form noValidate autoComplete="off" onSubmit={handleSubmitGenerate}>
-          <Button type="submit" className={styles.button}>Generate Key</Button>
+          <Box display="flex" flexDirection="row" >
+              <Box p={1} flexGrow={1}>
+                <TextField 
+                  required 
+                  id="p"
+                  label="P" 
+                  multiline
+                  focused
+                />
+              </Box>
+              <Box p={1} flexGrow={1}>
+                <TextField 
+                  required 
+                  id="q"
+                  label="Q" 
+                  multiline
+                  focused
+                />
+              </Box>
+              <Box p={1} flexGrow={1}>
+                <TextField 
+                  required 
+                  id="e"
+                  label="E" 
+                  multiline
+                  focused
+                />
+              </Box>
+              <Box p={1} flexGrow={1}>
+                <Button type="submit" className={styles.button}>Generate Key</Button>
+              </Box>
+          </Box>
         </form>
         
         {publicKey !=='' && (
           <Box display="flex" flexDirection="row" >
               <Box p={1} flexGrow={1}>
                 <Typography id="result-label" variant="h5" gutterBottom gutterTop>
-                    Public Key:
+                    Public Key (e):
                 </Typography>
                 <Typography id="result" variant="h5" gutterBottom gutterTop>
                     {publicKey}
@@ -325,7 +290,7 @@ const Tugas5 = () => {
           <Box display="flex" flexDirection="row" >
               <Box p={1} flexGrow={1}>
                 <Typography id="result-label" variant="h5" gutterBottom gutterTop>
-                    Private Key:
+                    Private Key (d):
                 </Typography>
                 <Typography id="result" variant="h5" gutterBottom gutterTop>
                     {privateKey}
@@ -341,24 +306,115 @@ const Tugas5 = () => {
               </Box>
           </Box>
         )}
+        
+        {n !=='' && (
+          <Box display="flex" flexDirection="row" >
+              <Box p={1} flexGrow={1}>
+                <Typography id="result-label" variant="h5" gutterBottom gutterTop>
+                    N:
+                </Typography>
+                <Typography id="result" variant="h5" gutterBottom gutterTop>
+                    {n}
+                </Typography>
+              </Box>
+              <Box p={1}>
+                <IconButton aria-label="download" onClick={downloadTxtFile}>
+                  <GetAppIcon />
+                </IconButton>
+                <IconButton aria-label="download" onClick={() => copyToClipboard(n)}>
+                <FileCopyIcon />
+                </IconButton>
+              </Box>
+          </Box>
+        )}
       </TabPanel>
       <TabPanel value={value} index={1}>
         <form noValidate autoComplete="off" onSubmit={handleSubmitSigning}>
-          <label class={styles.upload}>
-          <input class={styles.button} type="file" onChange={(e) => readTxtFile(e)} />
-            Upload File
-          </label>
+          <Box display="flex" flexDirection="row" >
+            <Box p={1}>
+              <TextField 
+                required 
+                id="d"
+                label="D" 
+                multiline
+                focused
+                value={privateKey}
+                onChange={e => setPrivateKey(e.target.value)}
+              />
+            </Box>
+            <Box p={1}>
+              <TextField 
+                required 
+                id="n"
+                label="N" 
+                multiline
+                focused
+                value={n}
+                onChange={e => setN(e.target.value)}
+              />
+            </Box>
+            <Box p={1}>
+              <TextField 
+                required 
+                id="output"
+                label="Output" 
+                multiline
+                focused
+                value={outputFileName}
+                onChange={e => setOutputFileName(e.target.value)}
+              />
+            </Box>
+            <label class={styles.upload}>
+            <input id="upload-signing" class={styles.button} type="file" onChange={ (e) => {setFile(e.target.files[0])}} />
+              Upload File
+            </label>
+            
+          </Box>
           <Button type="submit" className={styles.button}>Signing</Button>
         </form>
+        {status && <Typography id="result" variant="h5" gutterBottom gutterTop>
+          Status of signing is {status}
+        </Typography>}
+        {status==="COMPLETE" &&
+        <IconButton aria-label="download" onClick={() => download(outputFileName)}>
+          <GetAppIcon />
+        </IconButton>}
       </TabPanel>
       <TabPanel value={value} index={2}>
         <form noValidate autoComplete="off" onSubmit={handleSubmitVerifying}>
-          <label class={styles.upload}>
-          <input class={styles.button} type="file" onChange={(e) => readTxtFile(e)} />
-            Upload File
-          </label>
+          <Box display="flex" flexDirection="row" >
+            <Box p={1}>
+              <TextField 
+                required 
+                id="e"
+                label="E" 
+                multiline
+                focused
+                value={publicKey}
+                onChange={e => setPublicKey(e.target.value)}
+              />
+            </Box>
+            <Box p={1}>
+              <TextField 
+                required 
+                id="n"
+                label="N" 
+                multiline
+                focused
+                value={n}
+                onChange={e => setN(e.target.value)}
+              />
+            </Box>
+            <label class={styles.upload}>
+            <input id="upload-verifying" class={styles.button} type="file" onChange={(e) => {setFile(e.target.files[0])}} />
+              Upload File
+            </label>
+          </Box>
           <Button type="submit" className={styles.button}>Verifying</Button>
         </form>
+        <Typography id="result" variant="h5" gutterBottom gutterTop>
+          Result of verifying is {verifyResult}
+        </Typography>
       </TabPanel>
   </Container>
   

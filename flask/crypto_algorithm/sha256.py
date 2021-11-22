@@ -1,6 +1,6 @@
 import os
 import math
-from utils import *
+from .utils import *
 
 def sha256(lines, original_size):
 

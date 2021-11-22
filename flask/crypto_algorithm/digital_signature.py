@@ -1,10 +1,18 @@
 import os
-from rsa import *
-from sha256 import *
+from .rsa import *
+from .sha256 import *
+from .utils import *
 
 
-def set_digital_signature(filename, e, n):
+def set_digital_signature(filename, e, n, output_filename="output"):
+    
+    print("SETTING DIGITAL SIGNATURE")
+    print("Download file from firebase")
+    download_from_firebase("tubes5/signing/input/"+filename, "test.txt")
+    print(filename)
 
+    filename="test.txt"
+    print("Start setting digital signature")
     f = open(filename, "r")
 
     lines = f.readlines()
@@ -19,25 +27,37 @@ def set_digital_signature(filename, e, n):
     print(f"SHA256 : {hash_res}")
 
     encrypted_hash = rsa_encrypt(hash_res, e, n)
+    # encrypted_hash = hash_res
 
     # decrypted_hash = rsa_decrypt(encrypted_hash, d, n)
 
     print(f"Encrypted Hash : {encrypted_hash}")
     # print(f"Decrypted Hash : {decrypted_hash}")
 
-    f = open(filename, "a")
+    f = open("test.txt", "a")
     ds = f"<ds>{encrypted_hash}</ds>"
 
     for i in range(4):
         f.write("\n")
     f.write(ds)
     f.close()
+    
+    name, extension = os.path.splitext(filename)
+    
+    print("Upload file to firebase")
+    upload_to_firebase("tubes5/signing/output/" + output_filename, "test.txt")
 
-    return
+    return True
 
 
 def verify_digital_signature(filename, d, n):
 
+    print("VERIFYING DIGITAL SIGNATURE")
+    print("Downloading file from firebase")
+    
+    download_from_firebase("tubes5/verifying/" + filename, "verify.txt")
+    
+    filename="verify.txt"
     f = open(filename, "r")
     lines = f.readlines()
     f.close()
@@ -45,6 +65,7 @@ def verify_digital_signature(filename, d, n):
     for line in lines:
         print(line)
 
+    print("masuk sini")
     residual_size = 0
     space_size = 4
 
@@ -89,10 +110,16 @@ def verify_digital_signature(filename, d, n):
 
     # Verify File Here
     hash_res = sha256(original_content, os.stat(filename).st_size - residual_size)
+    print("Hash res adalah: ")
+    print(hash_res)
 
     # Decrypt Digital Signature
     encrypted_hash = ds[4:len(ds)-5]
     decrypted_hash = rsa_decrypt(encrypted_hash, d, n)
+    print(encrypt_message)
+    print(decrypted_hash)
+    
+    
 
     # print("Total Lines :", len(lines))
     # print(original_content)
@@ -114,13 +141,13 @@ def verify_digital_signature(filename, d, n):
 filename = "test.txt"
 
 # RSA with p = 1103, q = 2203, e = 10711. Will be used for RSA Encryption
-p = 1103
-q = 2203
-e = 10711
-keys = create_keys_rsa(p, q, e)
+# p = 1103
+# q = 2203
+# e = 10711
+# keys = create_keys_rsa(p, q, e)
 
-d = keys['private'][0]
-n = keys['private'][1]
+# d = keys['private'][0]
+# n = keys['private'][1]
 
 # Pake fungsi ini kalo mau sign suatu file
 # Remember, signing pake PRIVATE KEY (d). Dengan d yang cukup besar, proses signing agak lama
@@ -130,5 +157,5 @@ n = keys['private'][1]
 # Pake fungsi ini buat verify signature yang ada pada file
 # Verify digital signature pake public key
 
-verify_digital_signature(filename, e, n)
+# verify_digital_signature(filename, e, n)
 

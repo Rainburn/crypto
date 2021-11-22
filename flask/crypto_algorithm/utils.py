@@ -4,6 +4,7 @@
 
 import sys
 import random
+from .firebase import *
 
 # Convert a Char in Base 26, A = 0, Z = 25
 def convert_char_to_base26(character):
@@ -164,3 +165,9 @@ def not_binary(bin):
             res += "1"
 
     return res
+    
+def download_from_firebase(path_on_cloud, path_local):
+    storage.child(path_on_cloud).download(path_local)
+    
+def upload_to_firebase(path_on_cloud, path_local):
+    storage.child(path_on_cloud).put(path_local)
