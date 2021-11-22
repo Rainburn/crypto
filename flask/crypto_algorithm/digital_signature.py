@@ -65,6 +65,7 @@ def verify_digital_signature(filename, d, n):
     ds = lines[total_lines-1]
     total_newline_found = 0
     # Count the FREE \n
+    print(total_lines)
     for num_line in range(total_lines-2, (total_lines - 1)-5, -1):
         if (lines[num_line] == "\n"):
             total_newline_found += 1
@@ -111,7 +112,7 @@ def verify_digital_signature(filename, d, n):
 
 
 # Testing part 
-filename = "test.txt"
+filename = "plain_test.txt"
 
 # RSA with p = 1103, q = 2203, e = 10711. Will be used for RSA Encryption
 p = 1103
@@ -130,5 +131,4 @@ n = keys['private'][1]
 # Pake fungsi ini buat verify signature yang ada pada file
 # Verify digital signature pake public key
 
-verify_digital_signature(filename, e, n)
-
+# verify_digital_signature(filename, e, n)
